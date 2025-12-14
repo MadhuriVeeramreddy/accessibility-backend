@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "ts-node-dev src/server.ts",
     "test:db": "ts-node src/db/testConnection.ts",
-    "postinstall": "npx puppeteer browsers install chrome",
+    "build": "tsc && prisma generate",
+    "postinstall": "prisma generate && npx puppeteer browsers install chrome",
     "setup:chrome": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
