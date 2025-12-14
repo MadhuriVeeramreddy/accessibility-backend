@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessibility Compliance Report - <%= website.name || website.url %></title>
+  <style>
+    /* ===== BASE STYLES ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.6;
+      color: #1F2937;
+      background: #ffffff;
+    }
+
+    .page {
+      page-break-after: always;
+      padding: 20px 30px;
+      position: relative;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+    }
+
+    /* ===== BRAND THEME #2596BE ===== */
+    :root {
+      --primary: #2596BE;
+      --primary-dark: #1a6a8c;
+      --primary-light: #e6f4f9;
+      --critical: #DC2626;
+      --serious: #EA580C;
+      --moderate: #F59E0B;
+      --minor: #3B82F6;
+      --success: #059669;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1 {
+      font-size: 24pt;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 18pt;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin: 24px 0 12px 0;
+    }
+
+    h3 {
+      font-size: 14pt;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin: 16px 0 8px 0;
+    }
+
+    p {
+      margin-bottom: 10px;
+      text-align: justify;
+      line-height: 1.7;
+    }
+
+    /* ===== HEADER & FOOTER ===== */
+    .header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+
+    .brand-title {
+      font-size: 28pt;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .report-subtitle {
+      font-size: 13pt;
+      color: var(--gray-600);
+    }
+
+    .website-info {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .info-row {
+      display: flex;
+      margin-bottom: 8px;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--gray-700);
+      width: 120px;
+      flex-shrink: 0;
+    }
+
+    .info-value {
+      color: var(--gray-900);
+      word-break: break-word;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 15px;
+      left: 30px;
+      right: 30px;
+      text-align: center;
+      font-size: 9pt;
+      color: var(--gray-600);
+      border-top: 1px solid var(--gray-200);
+      padding-top: 8px;
+    }
+
+    /* ===== BOXES & CARDS ===== */
+    .box {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      page-break-inside: avoid;
+    }
+
+    .box-primary {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      border-left-width: 4px;
+    }
+
+    .box-warning {
+      background: #FEF3C7;
+      border-color: var(--moderate);
+      border-left-width: 4px;
+    }
+
+    .box-danger {
+      background: #FEE2E2;
+      border-color: var(--critical);
+      border-left-width: 4px;
+    }
+
+    .box-success {
+      background: #D1FAE5;
+      border-color: var(--success);
+      border-left-width: 4px;
+    }
+
+    /* ===== BADGES & LABELS ===== */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 9pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-critical { background: var(--critical); color: white; }
+    .badge-serious { background: var(--serious); color: white; }
+    .badge-moderate { background: var(--moderate); color: white; }
+    .badge-minor { background: var(--minor); color: white; }
+    .badge-success { background: var(--success); color: white; }
+    .badge-developer { background: #6366F1; color: white; }
+    .badge-designer { background: #EC4899; color: white; }
+    .badge-content { background: #8B5CF6; color: white; }
+    .badge-tester { background: #06B6D4; color: white; }
+
+    /* ===== GRID LAYOUTS ===== */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    /* ===== STAT BOXES ===== */
+    .stat-box {
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+
+    .stat-value {
+      font-size: 32pt;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 10pt;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    /* ===== TABLES ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border: 1px solid var(--gray-200);
+    }
+
+    th {
+      background: var(--gray-100);
+      font-weight: 600;
+      color: var(--gray-900);
+      font-size: 10pt;
+    }
+
+    td {
+      font-size: 10pt;
+      background: white;
+    }
+
+    tr:nth-child(even) td {
+      background: var(--gray-50);
+    }
+
+    /* ===== ISSUE CARDS ===== */
+    .issue-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      page-break-inside: avoid;
+    }
+
+    .issue-card.critical { border-left: 4px solid var(--critical); }
+    .issue-card.serious { border-left: 4px solid var(--serious); }
+    .issue-card.moderate { border-left: 4px solid var(--moderate); }
+    .issue-card.minor { border-left: 4px solid var(--minor); }
+
+    .issue-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .issue-count {
+      background: var(--gray-700);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 9pt;
+      font-weight: 700;
+    }
+
+    .issue-title {
+      font-weight: 600;
+      color: var(--gray-900);
+      font-size: 11pt;
+      flex: 1;
+    }
+
+    .issue-description {
+      color: var(--gray-700);
+      font-size: 10pt;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .issue-improvement {
+      background: var(--primary-light);
+      border-left: 3px solid var(--primary);
+      padding: 10px;
+      margin: 12px 0;
+      border-radius: 4px;
+    }
+
+    .issue-improvement strong {
+      color: var(--primary-dark);
+      font-size: 9.5pt;
+    }
+
+    .fix-section {
+      background: var(--gray-50);
+      border-radius: 6px;
+      padding: 12px;
+      margin: 12px 0;
+    }
+
+    .fix-title {
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+      font-size: 10.5pt;
+    }
+
+    .code-example {
+      background: #1F2937;
+      color: #F9FAFB;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 9pt;
+      margin: 8px 0;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .code-label {
+      font-size: 8.5pt;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    /* ===== SCORE GAUGE ===== */
+    .score-container {
+      text-align: center;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .score-gauge {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .score-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48pt;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .score-label {
+      font-size: 12pt;
+      color: var(--gray-600);
+      margin-top: 16px;
+    }
+
+    /* ===== TIMELINE ===== */
+    .timeline-item {
+      display: flex;
+      margin: 16px 0;
+      page-break-inside: avoid;
+    }
+
+    .timeline-marker {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-right: 12px;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-year {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 11pt;
+    }
+
+    .timeline-text {
+      color: var(--gray-700);
+      font-size: 10pt;
+      margin-top: 4px;
+    }
+
+    /* ===== LISTS ===== */
+    ul, ol {
+      margin: 12px 0 12px 20px;
+    }
+
+    li {
+      margin: 6px 0;
+      line-height: 1.6;
+    }
+
+    .checklist {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .checklist li:before {
+      content: "✓ ";
+      color: var(--success);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    /* ===== CERTIFICATE ===== */
+    .certificate {
+      border: 8px double var(--primary);
+      padding: 48px;
+      text-align: center;
+      margin: 48px 0;
+      background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
+    }
+
+    .certificate-title {
+      font-size: 32pt;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+
+    .certificate-text {
+      font-size: 14pt;
+      color: var(--gray-700);
+      margin: 16px 0;
+      line-height: 1.8;
+    }
+
+    .certificate-signature {
+      margin-top: 48px;
+      font-style: italic;
+      color: var(--gray-600);
+    }
+
+    /* ===== UTILITIES ===== */
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .mb-1 { margin-bottom: 8px; }
+    .mb-2 { margin-bottom: 16px; }
+    .mb-3 { margin-bottom: 24px; }
+    .mt-1 { margin-top: 8px; }
+    .mt-2 { margin-top: 16px; }
+    .mt-3 { margin-top: 24px; }
+    
+    .font-bold { font-weight: 700; }
+    .text-small { font-size: 9pt; }
+    
+    @media print {
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      
+      .page-break {
+        page-break-before: always;
+      }
+      
+      .no-break {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER (ALL PAGES) ===== -->
+<div class="header">
+  <div class="brand-title"><%= brandName %></div>
+  <div class="report-subtitle">Web Accessibility Compliance Report</div>
+</div>
+
+<div class="website-info">
+  <div class="info-row">
+    <span class="info-label">Website:</span>
+    <span class="info-value"><%= website.name || website.url %></span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">URL:</span>
+    <span class="info-value"><%= website.url %></span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Scan Date:</span>
+    <span class="info-value"><%= scanDate %></span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Scan ID:</span>
+    <span class="info-value"><%= scanId %></span>
+  </div>
+  <% if (score !== null) { %>
+  <div class="info-row">
+    <span class="info-label">Accessibility Score:</span>
+    <span class="info-value"><strong><%= Math.round(score) %>/100</strong></span>
+  </div>
+  <% } %>
+</div>
+
+<!-- ===== HOW TO USE THIS REPORT ===== -->
+<div class="box box-primary">
+  <h2>📖 How to Use This Report</h2>
+  <p>This comprehensive accessibility audit report provides actionable insights to improve your website's compliance with international standards including WCAG 2.1 Level AA, India's RPWD Act 2016, and IS 17802:2023.</p>
+  
+  <h3>Report Sections:</h3>
+  <ul>
+    <li><strong>Executive Summary:</strong> Overview of findings and business impact</li>
+    <li><strong>India Compliance Context:</strong> RPWD Act and IS 17802 status</li>
+    <li><strong>WCAG Alignment:</strong> How issues map to WCAG criteria</li>
+    <li><strong>Detailed Issues:</strong> Specific problems with fix instructions</li>
+    <li><strong>Sector Guidance:</strong> Industry-specific compliance requirements</li>
+  </ul>
+  
+  <h3>Taking Action:</h3>
+  <ol>
+    <li>Review business risk assessment and prioritize based on severity</li>
+    <li>Assign issues to appropriate teams (Developer/Designer/Content)</li>
+    <li>Follow fix instructions provided for each issue</li>
+    <li>Test fixes with assistive technologies before deploying</li>
+    <li>Schedule regular audits to maintain compliance</li>
+  </ol>
+</div>
+
+<!-- ===== EXECUTIVE SUMMARY ===== -->
+<div class="page-break"></div>
+<h1>Executive Summary</h1>
+
+<h2>What We Scanned</h2>
+<p>We conducted a comprehensive accessibility audit of <strong><%= website.name || website.url %></strong> on <%= scanDate %>. This audit evaluates compliance with WCAG 2.1 Level AA, India's Rights of Persons with Disabilities (RPWD) Act 2016, and IS 17802:2023 Indian Standard on Information Technology Accessibility.</p>
+
+<h2>Key Findings</h2>
+
+<div class="grid-4">
+  <div class="stat-box">
+    <div class="stat-value" style="color: var(--gray-600);"><%= issuesCount %></div>
+    <div class="stat-label">Total Issues</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-value" style="color: var(--critical);"><%= severityBreakdown.critical %></div>
+    <div class="stat-label">Critical</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-value" style="color: var(--serious);"><%= severityBreakdown.serious %></div>
+    <div class="stat-label">Serious</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-value" style="color: var(--moderate);"><%= severityBreakdown.moderate %></div>
+    <div class="stat-label">Moderate</div>
+  </div>
+</div>
+
+<!-- Business Risk Assessment -->
+<div class="box <%= businessRisk.level === 'Critical' ? 'box-danger' : businessRisk.level === 'High' ? 'box-warning' : '' %>">
+  <h2>🎯 Business Risk Assessment</h2>
+  <div class="mb-2">
+    <span class="badge <%= businessRisk.level === 'Critical' ? 'badge-critical' : businessRisk.level === 'High' ? 'badge-serious' : businessRisk.level === 'Medium' ? 'badge-moderate' : 'badge-success' %>">
+      <%= businessRisk.level %> RISK
+    </span>
+    <span class="text-small" style="margin-left: 12px;">Risk Score: <%= businessRisk.score %>/100</span>
+  </div>
+  
+  <p><strong>Assessment:</strong> <%= businessRisk.description %></p>
+  
+  <h3>Legal Exposure</h3>
+  <p><%= businessRisk.legalRisk %></p>
+  
+  <h3>Reputational Impact</h3>
+  <p><%= businessRisk.reputationRisk %></p>
+  
+  <h3>Recommended Actions</h3>
+  <ol>
+    <% businessRisk.recommendations.forEach(function(rec) { %>
+    <li><%= rec %></li>
+    <% }); %>
+  </ol>
+</div>
+
+<!-- India Compliance Status -->
+<div class="page-break"></div>
+<h1>🇮🇳 India Accessibility Compliance Context</h1>
+
+<div class="grid-2">
+  <div class="box">
+    <h3>RPWD Act 2016 Status</h3>
+    <div class="mb-2">
+      <span class="badge <%= indiaComplianceStatus.rpwdStatus === 'Compliant' ? 'badge-success' : indiaComplianceStatus.rpwdStatus === 'Partially Compliant' ? 'badge-moderate' : 'badge-critical' %>">
+        <%= indiaComplianceStatus.rpwdStatus.toUpperCase() %>
+      </span>
+    </div>
+    <p class="text-small">Rights of Persons with Disabilities Act 2016, Section 46 mandates accessible websites for persons with disabilities.</p>
+  </div>
+  
+  <div class="box">
+    <h3>IS 17802:2023 Status</h3>
+    <div class="mb-2">
+      <span class="badge <%= indiaComplianceStatus.is17802Status === 'Compliant' ? 'badge-success' : indiaComplianceStatus.is17802Status === 'Partially Compliant' ? 'badge-moderate' : 'badge-critical' %>">
+        <%= indiaComplianceStatus.is17802Status.toUpperCase() %>
+      </span>
+    </div>
+    <p class="text-small">Indian Standard on Information Technology Accessibility for Persons with Disabilities.</p>
+  </div>
+</div>
+
+<h2>India Accessibility Timeline</h2>
+<div class="timeline-item">
+  <div class="timeline-marker">1</div>
+  <div class="timeline-content">
+    <div class="timeline-year">2016</div>
+    <div class="timeline-text">RPWD Act enacted, mandating accessible digital infrastructure under Section 46</div>
+  </div>
+</div>
+
+<div class="timeline-item">
+  <div class="timeline-marker">2</div>
+  <div class="timeline-content">
+    <div class="timeline-year">2023</div>
+    <div class="timeline-text">IS 17802:2023 adopted as national accessibility standard for ICT</div>
+  </div>
+</div>
+
+<div class="timeline-item">
+  <div class="timeline-marker">3</div>
+  <div class="timeline-content">
+    <div class="timeline-year">2024</div>
+    <div class="timeline-text">Enhanced enforcement and awareness campaigns for digital accessibility</div>
+  </div>
+</div>
+
+<div class="box box-primary mt-3">
+  <h3>⚖️ RPWD Act 2016 - Section 46 (Accessibility)</h3>
+  <p><em>"The appropriate Government shall take measures to ensure that persons with disabilities have access to... information and communications technology and systems..."</em></p>
+  <p class="text-small mt-2"><strong>Note:</strong> This report is for informational purposes only and does not constitute legal advice. Consult with accessibility and legal professionals for compliance verification.</p>
+</div>
+
+<h2 class="mt-3">Compliance Timeline</h2>
+<div class="box box-warning">
+  <p><strong>Recommended Timeline:</strong> <%= indiaComplianceStatus.timeline %></p>
+  
+  <% if (indiaComplianceStatus.criticalGaps.length > 0) { %>
+  <h3 class="mt-2">Critical Compliance Gaps:</h3>
+  <ul>
+    <% indiaComplianceStatus.criticalGaps.forEach(function(gap) { %>
+    <li><%= gap %></li>
+    <% }); %>
+  </ul>
+  <% } %>
+</div>
+
+<!-- WCAG Alignment Table -->
+<div class="page-break"></div>
+<h1>WCAG 2.1 Alignment</h1>
+
+<p>Web Content Accessibility Guidelines (WCAG) 2.1 Level AA is the international standard for web accessibility and is referenced by India's IS 17802:2023.</p>
+
+<div class="box">
+  <h3>Current Conformance Level: <span class="badge <%= wcagConformance.level === 'AAA' ? 'badge-success' : wcagConformance.level === 'AA' ? 'badge-minor' : wcagConformance.level === 'A' ? 'badge-moderate' : 'badge-critical' %>"><%= wcagConformance.level %></span></h3>
+  
+  <% if (wcagConformance.failedCriteria.length > 0) { %>
+  <h3 class="mt-2">Failed Success Criteria:</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Success Criterion</th>
+        <th>Level</th>
+        <th>Issue Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% wcagConformance.failedCriteria.slice(0, 10).forEach(function(criteria) { %>
+      <tr>
+        <td><%= criteria.criterion %></td>
+        <td><span class="badge badge-<%= criteria.level === 'A' ? 'critical' : criteria.level === 'AA' ? 'serious' : 'moderate' %>"><%= criteria.level %></span></td>
+        <td><%= criteria.count %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% if (wcagConformance.failedCriteria.length > 10) { %>
+  <p class="text-small text-center mt-1"><em>+<%= wcagConformance.failedCriteria.length - 10 %> more criteria. View full details in dashboard.</em></p>
+  <% } %>
+  <% } %>
+</div>
+
+<h2>WCAG 2.1 Four Principles</h2>
+<div class="grid-2">
+  <div class="box">
+    <h3>1️⃣ Perceivable</h3>
+    <p class="text-small">Information and UI components must be presentable to users in ways they can perceive.</p>
+    <p class="font-bold mt-1"><%= wcagCategories.find(c => c.principle === 'Perceivable')?.count || 0 %> issues</p>
+  </div>
+  
+  <div class="box">
+    <h3>2️⃣ Operable</h3>
+    <p class="text-small">UI components and navigation must be operable by all users.</p>
+    <p class="font-bold mt-1"><%= wcagCategories.find(c => c.principle === 'Operable')?.count || 0 %> issues</p>
+  </div>
+  
+  <div class="box">
+    <h3>3️⃣ Understandable</h3>
+    <p class="text-small">Information and UI operation must be understandable.</p>
+    <p class="font-bold mt-1"><%= wcagCategories.find(c => c.principle === 'Understandable')?.count || 0 %> issues</p>
+  </div>
+  
+  <div class="box">
+    <h3>4️⃣ Robust</h3>
+    <p class="text-small">Content must be robust enough for diverse user agents and assistive technologies.</p>
+    <p class="font-bold mt-1"><%= wcagCategories.find(c => c.principle === 'Robust')?.count || 0 %> issues</p>
+  </div>
+</div>
+
+<!-- Score Gauge -->
+<% if (score !== null) { %>
+<div class="page-break"></div>
+<h1>Accessibility Score</h1>
+
+<div class="score-container">
+  <div class="score-gauge">
+    <svg width="200" height="200" viewBox="0 0 200 200">
+      <!-- Background arc -->
+      <circle cx="100" cy="100" r="80" fill="none" stroke="#E5E7EB" stroke-width="20"/>
+      <!-- Score arc -->
+      <%
+        const scorePercentage = score / 100;
+        const dashArray = 2 * Math.PI * 80;
+        const dashOffset = dashArray * (1 - scorePercentage);
+        const scoreColor = score >= 90 ? '#059669' : score >= 50 ? '#F59E0B' : '#DC2626';
+      %>
+      <circle 
+        cx="100" 
+        cy="100" 
+        r="80" 
+        fill="none" 
+        stroke="<%= scoreColor %>" 
+        stroke-width="20"
+        stroke-dasharray="<%= dashArray %>"
+        stroke-dashoffset="<%= dashOffset %>"
+        stroke-linecap="round"
+        transform="rotate(-90 100 100)"
+      />
+    </svg>
+    <div class="score-value"><%= Math.round(score) %></div>
+  </div>
+  <div class="score-label">
+    <%= score >= 90 ? 'Excellent - Strong accessibility foundation' : 
+        score >= 70 ? 'Good - Some improvements needed' :
+        score >= 50 ? 'Fair - Significant work required' :
+        'Poor - Critical improvements needed' %>
+  </div>
+</div>
+<% } %>
+
+<!-- GIGW Section (Conditional) -->
+<% if (gigwResults && isGovernment) { %>
+<div class="page-break"></div>
+<h1>GIGW 3.0 Compliance</h1>
+
+<p>Guidelines for Indian Government Websites (GIGW) 3.0 are mandatory standards for all Indian government websites. These guidelines ensure accessibility, usability, and compliance with Indian regulations.</p>
+
+<div class="box <%= gigwResults.passed ? 'box-success' : 'box-danger' %>">
+  <h2>Compliance Status: 
+    <span class="badge <%= gigwResults.passed ? 'badge-success' : 'badge-critical' %>">
+      <%= gigwResults.passed ? 'PASSED ✓' : 'FAILED ✗' %>
+    </span>
+  </h2>
+  <p class="mt-1"><strong><%= gigwResults.passedChecks %> of <%= gigwResults.totalChecks %></strong> checks passed</p>
+</div>
+
+<% if (gigwResults.details && Object.keys(gigwResults.details).length > 0) { %>
+<h2>Detailed Checks</h2>
+<table>
+  <thead>
+    <tr>
+      <th width="10%">Status</th>
+      <th>Check</th>
+      <th width="15%">Priority</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% Object.entries(gigwResults.details).forEach(function([key, value]) {
+      const isPassed = value.passed || value === true;
+    %>
+    <tr>
+      <td style="text-align: center;">
+        <span style="font-size: 14pt; color: <%= isPassed ? '#059669' : '#DC2626' %>; font-weight: 700;">
+          <%= isPassed ? '✓' : '✗' %>
+        </span>
+      </td>
+      <td><%= key.replace(/GIGW 3\.0 - /g, '') %></td>
+      <td>
+        <% if (!isPassed) { %>
+        <span class="badge badge-critical">High</span>
+        <% } else { %>
+        <span class="badge badge-success">Pass</span>
+        <% } %>
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
+<% } %>
+<% } %>
+
+<!-- Detailed Issues by Severity -->
+<div class="page-break"></div>
+<h1>Detailed Issues & Fix Instructions</h1>
+
+<p>The following sections detail all accessibility issues found, organized by severity. Each issue includes:</p>
+<ul class="mb-2">
+  <li><strong>What improves if fixed:</strong> User experience benefits</li>
+  <li><strong>Owner:</strong> Responsible team (Developer/Designer/Content)</li>
+  <li><strong>Fix instructions:</strong> Step-by-step remediation guidance</li>
+  <li><strong>Affected selectors:</strong> Specific page elements (truncated to 5)</li>
+</ul>
+
+<%
+// Group issues by severity for display
+const severityOrder = ['critical', 'serious', 'moderate', 'minor'];
+const severityLabels = {
+  critical: 'Critical Issues',
+  serious: 'Serious Issues',
+  moderate: 'Moderate Issues',
+  minor: 'Minor Issues'
+};
+%>
+
+<% severityOrder.forEach(function(severity) {
+  const severityIssues = issuesBySeverity[severity];
+  if (!severityIssues || severityIssues.length === 0) return;
+%>
+
+<div class="page-break"></div>
+<h2 style="color: <%= severity === 'critical' ? 'var(--critical)' : severity === 'serious' ? 'var(--serious)' : severity === 'moderate' ? 'var(--moderate)' : 'var(--minor)' %>;">
+  <%= severityLabels[severity] %> (<%= severityIssues.length %>)
+</h2>
+
+<% severityIssues.forEach(function(issue) { %>
+<div class="issue-card <%= issue.severity %>">
+  <div class="issue-header">
+    <span class="badge badge-<%= issue.severity %>"><%= issue.severityText %></span>
+    <span class="issue-count">×<%= issue.count %></span>
+    <span class="badge badge-<%= issue.owner.toLowerCase() %>"><%= issue.owner %></span>
+    <span class="issue-title"><%= issue.ruleId %></span>
+  </div>
+  
+  <div class="issue-description"><%= issue.description %></div>
+  
+  <div class="issue-improvement">
+    <strong>✨ What improves if fixed:</strong> <%= issue.whatImproves %>
+  </div>
+  
+  <% if (issue.fixInstruction) { %>
+  <div class="fix-section">
+    <div class="fix-title">🔧 How to Fix</div>
+    <p class="text-small"><%= issue.fixInstruction.howToFix %></p>
+    
+    <% if (issue.fixInstruction.codeExample) { %>
+    <div class="mt-2">
+      <div class="code-label">❌ Before (Incorrect):</div>
+      <div class="code-example"><%= issue.fixInstruction.codeExample.before %></div>
+      
+      <div class="code-label mt-1">✅ After (Correct):</div>
+      <div class="code-example"><%= issue.fixInstruction.codeExample.after %></div>
+    </div>
+    <% } %>
+  </div>
+  <% } %>
+  
+  <% if (issue.selectors.length > 0) { %>
+  <div class="mt-2">
+    <div class="fix-title">📍 Affected Elements (<%= issue.selectors.length %>)</div>
+    <table>
+      <thead>
+        <tr>
+          <th width="5%">#</th>
+          <th>CSS Selector</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% issue.selectors.slice(0, 5).forEach(function(selector, idx) { %>
+        <tr>
+          <td><%= idx + 1 %></td>
+          <td><code style="font-size: 9pt; word-break: break-all;"><%= selector.substring(0, 100) %><%= selector.length > 100 ? '...' : '' %></code></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <% if (issue.selectors.length > 5) { %>
+    <p class="text-small text-center mt-1">
+      <em>+<%= issue.selectors.length - 5 %> more selectors. 
+      <a href="<%= dashboardUrl %>/scan/<%= scanId %>" style="color: var(--primary);">View full list in dashboard →</a></em>
+    </p>
+    <% } %>
+  </div>
+  <% } %>
+</div>
+<% }); %>
+
+<% }); %>
+
+<!-- Sector-Specific Guidance -->
+<div class="page-break"></div>
+<h1>Sector-Specific Compliance Guidance</h1>
+
+<div class="box box-primary">
+  <h2><%= sectorGuidance.sector %> Sector</h2>
+  
+  <h3>Applicable Regulations</h3>
+  <ul>
+    <% sectorGuidance.regulations.forEach(function(reg) { %>
+    <li><%= reg %></li>
+    <% }); %>
+  </ul>
+  
+  <h3>Specific Requirements</h3>
+  <ul class="checklist">
+    <% sectorGuidance.specificRequirements.forEach(function(req) { %>
+    <li><%= req %></li>
+    <% }); %>
+  </ul>
+  
+  <% if (sectorGuidance.complianceDeadline) { %>
+  <div class="box box-warning mt-2">
+    <p><strong>⏰ Compliance Timeline:</strong> <%= sectorGuidance.complianceDeadline %></p>
+    <% if (sectorGuidance.penalties) { %>
+    <p class="mt-1"><strong>⚠️ Non-Compliance Implications:</strong> <%= sectorGuidance.penalties %></p>
+    <% } %>
+  </div>
+  <% } %>
+</div>
+
+<h2>Next Steps & Recommendations</h2>
+<div class="box">
+  <ol>
+    <li><strong>Immediate Action (0-7 days):</strong> Address all critical issues that block access for users with disabilities</li>
+    <li><strong>Short Term (8-30 days):</strong> Fix serious issues and establish accessibility testing in your workflow</li>
+    <li><strong>Medium Term (1-3 months):</strong> Resolve moderate issues and implement accessibility governance</li>
+    <li><strong>Ongoing:</strong> Maintain compliance through regular audits, training, and monitoring</li>
+  </ol>
+  
+  <h3 class="mt-2">Resources & Support</h3>
+  <ul>
+    <li>Full accessibility dashboard: <a href="<%= dashboardUrl %>" style="color: var(--primary);"><%= dashboardUrl %></a></li>
+    <li>WCAG 2.1 Guidelines: <em>w3.org/WAI/WCAG21/quickref</em></li>
+    <li>IS 17802:2023 Standard: <em>Available through Bureau of Indian Standards</em></li>
+    <li>RPWD Act 2016: <em>legislative.gov.in</em></li>
+  </ul>
+</div>
+
+<!-- Certificate Page -->
+<div class="page-break"></div>
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center;">
+  <div class="certificate">
+    <div class="certificate-title">Accessibility Audit Certificate</div>
+    
+    <div class="certificate-text">
+      This certifies that a comprehensive accessibility audit was conducted on
+    </div>
+    
+    <div class="certificate-text font-bold" style="font-size: 16pt; color: var(--primary);">
+      <%= website.name || website.url %>
+    </div>
+    
+    <div class="certificate-text">
+      on <%= scanDate %> by <%= brandName %>
+    </div>
+    
+    <div class="certificate-text mt-3">
+      This audit evaluated compliance with:<br/>
+      <strong>WCAG 2.1 Level AA | IS 17802:2023 | RPWD Act 2016</strong>
+    </div>
+    
+    <% if (gigwResults && isGovernment) { %>
+    <div class="certificate-text">
+      <strong>GIGW 3.0</strong> (Government Website Guidelines)
+    </div>
+    <% } %>
+    
+    <div class="certificate-text mt-3">
+      <strong>Total Issues Identified:</strong> <%= issuesCount %><br/>
+      <strong>Scan Reference:</strong> <%= scanId %>
+    </div>
+    
+    <div class="certificate-signature">
+      Generated by <%= brandName %> Accessibility Platform<br/>
+      <%= dashboardUrl %>
+    </div>
+  </div>
+</div>
+
+<!-- Footer (on all pages) -->
+<div class="footer">
+  Generated by <%= brandName %> | <%= dashboardUrl %> | Scan ID: <%= scanId %> | <%= scanDate %>
+</div>
+
+</body>
+</html>

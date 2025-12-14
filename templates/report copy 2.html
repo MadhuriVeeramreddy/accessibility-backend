@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Audit Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+            
+            @bottom-right {
+                content: "Page " counter(page);
+                font-size: 9pt;
+                color: #666;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            font-weight: 700;
+            margin-bottom: 8pt;
+            margin-top: 0;
+            line-height: 1.2;
+            color: #1e3a8a;
+        }
+        
+        h2 {
+            font-size: 16pt;
+            font-weight: 700;
+            margin-top: 20pt;
+            margin-bottom: 8pt;
+            line-height: 1.3;
+            page-break-after: avoid;
+            color: #2563eb;
+            border-bottom: 2pt solid #3b82f6;
+            padding-bottom: 4pt;
+        }
+        
+        h3 {
+            font-size: 13pt;
+            font-weight: 700;
+            margin-top: 16pt;
+            margin-bottom: 6pt;
+            page-break-after: avoid;
+            color: #4338ca;
+        }
+        
+        h4 {
+            font-size: 11pt;
+            font-weight: 700;
+            margin-top: 12pt;
+            margin-bottom: 4pt;
+            page-break-after: avoid;
+            color: #4f46e5;
+        }
+        
+        p {
+            margin-bottom: 8pt;
+            text-align: justify;
+        }
+        
+        .header-info {
+            font-size: 10pt;
+            line-height: 1.5;
+            margin-bottom: 16pt;
+            padding: 12pt;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left: 4pt solid #3b82f6;
+        }
+        
+        .metadata {
+            font-size: 9pt;
+            color: #1e40af;
+            margin-bottom: 4pt;
+        }
+        
+        .metadata strong {
+            color: #1e3a8a;
+        }
+        
+        .divider {
+            border-top: 2pt solid #3b82f6;
+            margin: 16pt 0;
+        }
+        
+        .score-display {
+            font-size: 48pt;
+            font-weight: 700;
+            margin: 12pt 0;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .severity-grid {
+            margin: 12pt 0;
+        }
+        
+        .severity-item {
+            margin-bottom: 8pt;
+            font-size: 11pt;
+            padding: 8pt 12pt;
+            border-left: 4pt solid;
+            background: #f9fafb;
+        }
+        
+        .severity-item.critical {
+            border-left-color: #dc2626;
+            background: linear-gradient(90deg, #fef2f2 0%, #ffffff 100%);
+        }
+        
+        .severity-item.serious {
+            border-left-color: #ea580c;
+            background: linear-gradient(90deg, #fff7ed 0%, #ffffff 100%);
+        }
+        
+        .severity-item.moderate {
+            border-left-color: #f59e0b;
+            background: linear-gradient(90deg, #fffbeb 0%, #ffffff 100%);
+        }
+        
+        .severity-item.minor {
+            border-left-color: #16a34a;
+            background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%);
+        }
+        
+        .severity-label {
+            font-weight: 700;
+            display: inline-block;
+            min-width: 100pt;
+        }
+        
+        .critical { color: #dc2626; }
+        .serious { color: #ea580c; }
+        .moderate { color: #f59e0b; }
+        .minor { color: #16a34a; }
+        
+        .issue-block {
+            margin: 16pt 0;
+            padding: 12pt;
+            page-break-inside: avoid;
+            border-left: 3pt solid #e5e7eb;
+            background: #fafafa;
+        }
+        
+        .issue-title {
+            font-weight: 700;
+            font-size: 11pt;
+            margin-bottom: 6pt;
+            color: #1e40af;
+        }
+        
+        .issue-description {
+            font-size: 10pt;
+            margin-bottom: 8pt;
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        .fix-instruction {
+            font-size: 10pt;
+            margin: 8pt 0;
+            padding: 8pt 12pt;
+            background: linear-gradient(90deg, #ecfdf5 0%, #ffffff 100%);
+            border-left: 3pt solid #10b981;
+        }
+        
+        .fix-instruction strong {
+            color: #047857;
+        }
+        
+        .elements-list {
+            font-size: 9pt;
+            color: #6b7280;
+            margin: 8pt 0;
+            padding: 8pt;
+            font-family: 'Courier New', monospace;
+            background: #f9fafb;
+            border: 1pt solid #e5e7eb;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12pt 0;
+            font-size: 10pt;
+        }
+        
+        th {
+            text-align: left;
+            font-weight: 700;
+            padding: 8pt;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+        
+        td {
+            padding: 6pt 8pt;
+            vertical-align: top;
+            border-bottom: 1pt solid #e5e7eb;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        ul {
+            margin: 6pt 0 6pt 20pt;
+            font-size: 10pt;
+        }
+        
+        li {
+            margin-bottom: 4pt;
+        }
+        
+        .owner-tag {
+            font-size: 9pt;
+            font-weight: 600;
+            padding: 3pt 8pt;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border-radius: 3pt;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .small-text {
+            font-size: 9pt;
+            color: #6b7280;
+            font-style: italic;
+            padding: 8pt;
+            background: #f3f4f6;
+            border-left: 3pt solid #9ca3af;
+        }
+        
+        .highlight-box {
+            padding: 12pt;
+            margin: 12pt 0;
+            background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+            border-left: 4pt solid #eab308;
+        }
+        
+        .success-box {
+            padding: 12pt;
+            margin: 12pt 0;
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left: 4pt solid #22c55e;
+        }
+        
+        .info-box {
+            padding: 12pt;
+            margin: 12pt 0;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4pt solid #3b82f6;
+        }
+        
+        .certificate {
+            text-align: center;
+            margin-top: 40pt;
+        }
+        
+        .no-break {
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<h1>🔍 Accessibility Audit Report</h1>
+<div class="header-info">
+    <div class="metadata"><strong>🌐 Website:</strong> {{WEBSITE_NAME}}</div>
+    <div class="metadata"><strong>🔗 URL:</strong> {{WEBSITE_URL}}</div>
+    <div class="metadata"><strong>📅 Generated:</strong> {{SCAN_DATE}}</div>
+    <div class="metadata"><strong>📋 Standards:</strong> WCAG 2.1 Level AA, IS 17802:2023, RPWD Act 2016</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- EXECUTIVE SUMMARY -->
+<h2>📊 Executive Summary</h2>
+<p>This report presents the findings of an accessibility audit conducted on {{WEBSITE_NAME}}. The audit evaluates compliance with Web Content Accessibility Guidelines (WCAG) 2.1 Level AA, Indian Standard IS 17802:2023, and the Rights of Persons with Disabilities (RPWD) Act 2016.</p>
+
+<div class="info-box">
+    <p style="margin: 0;"><strong>Overall Accessibility Score:</strong> {{SCORE}}/100</p>
+</div>
+
+<div class="highlight-box">
+    <p style="margin: 0;"><strong>⚠️ Business Risk:</strong> {{BUSINESS_RISK}} — {{BUSINESS_RISK_DESCRIPTION}}</p>
+</div>
+
+<p><strong>Total Issues Detected:</strong> {{TOTAL_ISSUES}} accessibility issues were identified across <span class="critical">{{CRITICAL_COUNT}} critical</span>, <span class="serious">{{SERIOUS_COUNT}} serious</span>, <span class="moderate">{{MODERATE_COUNT}} moderate</span>, and <span class="minor">{{MINOR_COUNT}} minor</span> severity levels.</p>
+
+<div class="info-box">
+    <p style="margin: 0;"><strong>🎯 Immediate Actions Required:</strong> Critical and serious issues should be addressed within 30 days to reduce legal risk and improve user experience for people with disabilities.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- WCAG ALIGNMENT -->
+<h2>✅ WCAG 2.1 Level AA Alignment</h2>
+<p>WCAG 2.1 provides guidelines for making web content more accessible to people with disabilities. Level AA conformance is the internationally recognized standard for accessibility compliance.</p>
+
+<table>
+    <tr>
+        <th>Principle</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>Perceivable</td>
+        <td>Information must be presentable to users in ways they can perceive</td>
+    </tr>
+    <tr>
+        <td>Operable</td>
+        <td>User interface components must be operable by all users</td>
+    </tr>
+    <tr>
+        <td>Understandable</td>
+        <td>Information and operation must be understandable</td>
+    </tr>
+    <tr>
+        <td>Robust</td>
+        <td>Content must be robust enough for assistive technologies</td>
+    </tr>
+</table>
+
+<!-- INDIA COMPLIANCE -->
+<h2>🇮🇳 India Accessibility Compliance Context</h2>
+
+<h3>📜 IS 17802:2023 (Indian Standard)</h3>
+<p>This standard, published by the Bureau of Indian Standards, provides guidelines for accessibility in information and communication technology (ICT) products and services. It is based on WCAG 2.1 and adapted for the Indian context.</p>
+
+<h3>⚖️ RPWD Act 2016</h3>
+<p>The Rights of Persons with Disabilities Act, 2016 mandates that all government and private entities providing goods and services must ensure accessibility for persons with disabilities. Non-compliance can result in legal penalties.</p>
+
+<div class="highlight-box">
+    <p style="margin: 0;"><strong>📅 Key Timelines:</strong> Government websites were required to achieve Level A compliance by June 2019 and Level AA compliance by March 2021. Private sector organizations providing public services are strongly encouraged to follow the same standards.</p>
+</div>
+
+<p class="small-text">Note: This audit is based on automated scanning tools and manual review. A comprehensive accessibility audit may require additional user testing with assistive technologies.</p>
+
+<div class="page-break"></div>
+
+<!-- ACCESSIBILITY SCORE -->
+<h2>🎯 Accessibility Score</h2>
+<div class="score-display">{{SCORE}}/100</div>
+
+<p>The accessibility score is calculated based on Lighthouse accessibility metrics and represents the overall accessibility health of the website. A score above 90 is considered good, while scores below 70 indicate significant accessibility barriers.</p>
+
+<!-- SEVERITY BREAKDOWN -->
+<h2>📋 Issue Breakdown by Severity</h2>
+<div class="severity-grid">
+    <div class="severity-item critical">
+        <span class="severity-label critical">🚨 Critical ({{CRITICAL_COUNT}})</span>
+        Issues that prevent users with disabilities from accessing content
+    </div>
+    <div class="severity-item serious">
+        <span class="severity-label serious">⚠️ Serious ({{SERIOUS_COUNT}})</span>
+        Significant barriers that severely impact user experience
+    </div>
+    <div class="severity-item moderate">
+        <span class="severity-label moderate">⚡ Moderate ({{MODERATE_COUNT}})</span>
+        Barriers that cause difficulty but don't prevent access
+    </div>
+    <div class="severity-item minor">
+        <span class="severity-label minor">ℹ️ Minor ({{MINOR_COUNT}})</span>
+        Small issues that may cause minor inconvenience
+    </div>
+</div>
+
+<!-- GIGW COMPLIANCE -->
+<h2>🏛️ GIGW 3.0 Compliance Status</h2>
+<p><strong>Status:</strong> {{GIGW_STATUS}}</p>
+<p><strong>Checks Passed:</strong> {{GIGW_PASSED}} out of {{GIGW_TOTAL}}</p>
+
+{{GIGW_VIOLATIONS_HTML}}
+
+<div class="divider"></div>
+
+<!-- DETAILED ISSUES -->
+<h2>🔍 Detailed Accessibility Issues</h2>
+<p>The following sections detail each accessibility issue identified, organized by severity level. Each issue includes a description, recommended fix, responsible team member, and affected page elements.</p>
+
+{{DYNAMIC_ISSUES_HTML}}
+
+<div class="page-break"></div>
+
+<!-- SECTOR GUIDANCE -->
+<h2>🎯 Next Steps and Recommendations</h2>
+
+<h3>🔴 Immediate Priorities (0-30 days)</h3>
+<ul>
+    <li>Fix all critical issues that prevent users with disabilities from accessing core functionality</li>
+    <li>Address serious issues related to keyboard navigation and screen reader compatibility</li>
+    <li>Implement proper ARIA labels and semantic HTML structure</li>
+    <li>Ensure all form inputs have associated labels</li>
+</ul>
+
+<h3>🟡 Short-term Actions (30-90 days)</h3>
+<ul>
+    <li>Resolve moderate severity issues affecting user experience</li>
+    <li>Improve color contrast across the site</li>
+    <li>Add text alternatives for all non-text content</li>
+    <li>Implement skip navigation links</li>
+</ul>
+
+<h3>🟢 Long-term Strategy (90+ days)</h3>
+<ul>
+    <li>Establish accessibility guidelines for new development</li>
+    <li>Conduct user testing with people who use assistive technologies</li>
+    <li>Train development and design teams on accessibility best practices</li>
+    <li>Integrate accessibility testing into the CI/CD pipeline</li>
+</ul>
+
+<h3>📚 Resources</h3>
+<ul>
+    <li>WCAG 2.1 Guidelines: https://www.w3.org/WAI/WCAG21/quickref/</li>
+    <li>IS 17802:2023 Standard (Bureau of Indian Standards)</li>
+    <li>GIGW 3.0 Guidelines: https://guidelines.india.gov.in/</li>
+    <li>RPWD Act 2016: https://www.india.gov.in/</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- CERTIFICATE PAGE -->
+<div class="certificate">
+    <h1>📜 Technical Accessibility Assessment Summary</h1>
+    
+    <p style="margin-top: 40pt; font-size: 12pt;">This document certifies that an accessibility audit was conducted on:</p>
+    
+    <p style="margin-top: 20pt; font-size: 14pt; font-weight: 700;">{{WEBSITE_NAME}}</p>
+    <p style="font-size: 12pt;">{{WEBSITE_URL}}</p>
+    
+    <p style="margin-top: 30pt; font-size: 12pt;">Assessment Date: {{SCAN_DATE}}</p>
+    
+    <table style="margin: 30pt auto; width: 400pt; text-align: left;">
+        <tr>
+            <td><strong>Accessibility Score:</strong></td>
+            <td>{{SCORE}}/100</td>
+        </tr>
+        <tr>
+            <td><strong>Total Issues:</strong></td>
+            <td>{{TOTAL_ISSUES}}</td>
+        </tr>
+        <tr>
+            <td><strong>Critical Issues:</strong></td>
+            <td>{{CRITICAL_COUNT}}</td>
+        </tr>
+        <tr>
+            <td><strong>Serious Issues:</strong></td>
+            <td>{{SERIOUS_COUNT}}</td>
+        </tr>
+        <tr>
+            <td><strong>Moderate Issues:</strong></td>
+            <td>{{MODERATE_COUNT}}</td>
+        </tr>
+        <tr>
+            <td><strong>Minor Issues:</strong></td>
+            <td>{{MINOR_COUNT}}</td>
+        </tr>
+        <tr>
+            <td><strong>GIGW 3.0 Status:</strong></td>
+            <td>{{GIGW_STATUS}}</td>
+        </tr>
+    </table>
+    
+    <p style="margin-top: 40pt; font-size: 10pt; color: #666;">Generated by AccessiScan Automated Accessibility Testing Platform</p>
+    <p style="font-size: 9pt; color: #999;">For detailed remediation guidance, visit: {{DASHBOARD_URL}}</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>WCAG 2.1 AA / IS 17802 Technical Accessibility Audit Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+            orphans: 3;
+            widows: 3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            color: #000;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            page-break-after: always;
+            border-top: 1px solid {{PAGE_BORDER_COLOR}};
+            border-bottom: 1px solid {{PAGE_BORDER_COLOR}};
+        }
+        
+        .page:last-child {
+            page-break-after: auto;
+        }
+        
+        /* Header Section */
+        .header-section {
+            background-color: {{HEADER_BACKGROUND}};
+            color: {{HEADER_TEXT}};
+            padding: 30px 40px;
+            width: 100%;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            margin-bottom: 24px;
+        }
+        
+        .logo span:first-child {
+            font-size: 26px;
+            display: inline-block;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+        
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            font-size: 13px;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+        
+        .website-info {
+            font-size: 13px;
+            line-height: 1.9;
+            opacity: 0.95;
+        }
+        
+        /* Executive Summary Container Box */
+        .executive-summary-container {
+            margin: 0;
+            background-color: {{EXECUTIVE_SUMMARY_BACKGROUND}};
+            border: none;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        
+        /* Executive Summary Section */
+        .executive-summary {
+            background-color: transparent;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: {{SECTION_TITLE_COLOR}};
+            margin-bottom: 24px;
+            letter-spacing: -0.3px;
+        }
+        
+        .section-title span:first-child {
+            font-size: 22px;
+            display: inline-block;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .card {
+            background-color: #FFFFFF;
+            border: none;
+            border-left: 4px solid {{CARD_LEFT_BORDER}};
+            border-radius: 6px;
+            padding: 24px;
+            margin-bottom: 18px;
+            /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
+        }
+        
+        .card * {
+            box-sizing: border-box;
+        }
+        
+        .card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: -0.2px;
+            color: {{QUESTION_COLOR}};
+        }
+        
+        .card-title span:first-child {
+            font-size: 18px;
+            display: inline-block;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .card-content {
+            font-size: 12px;
+            line-height: 1.7;
+            color: {{NORMAL_TEXT_COLOR}};
+        }
+        
+        .card-content strong {
+            color: {{BOLD_TEXT_COLOR}};
+            font-weight: 600;
+        }
+        
+        .risk-label {
+            background-color: {{HIGH_RISK_BACKGROUND}};
+            color: {{HIGH_RISK_TEXT}};
+            padding: 8px 16px;
+            border-radius: 6px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 13px;
+            margin: 12px 0;
+            letter-spacing: 0.3px;
+        }
+        
+        .bullet-list {
+            margin-left: 24px;
+            font-size: 12px;
+            line-height: 1.8;
+            margin-top: 12px;
+            color: {{NORMAL_TEXT_COLOR}};
+        }
+        
+        .bullet-list li {
+            margin-bottom: 10px;
+        }
+        
+        .info-box-blue {
+            background-color: {{INFO_BOX_BLUE}};
+            border: 1.5px solid {{INFO_BOX_BLUE_BORDER}};
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 16px;
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        .info-box-blue ul {
+            margin-left: 22px;
+            font-size: 12px;
+            color: {{INFO_BOX_BLUE_TEXT}};
+            line-height: 1.7;
+        }
+        
+        .info-box-blue ul li {
+            margin-bottom: 6px;
+        }
+        
+        .info-box-green {
+            background-color: {{INFO_BOX_GREEN}};
+            border: 2px solid {{INFO_BOX_GREEN_BORDER}};
+            border-radius: 5px;
+            padding: 15px;
+            margin: 0 0 20px 0;
+        }
+        
+        .green-box-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: {{INFO_BOX_GREEN_TEXT}};
+            margin-bottom: 15px;
+        }
+        
+        .green-box-title span:first-child {
+            font-size: 20px;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .green-box-content {
+            background-color: {{INFO_BOX_GREEN_CONTENT_BACKGROUND}};
+            font-size: 11px;
+            color: {{INFO_BOX_GREEN_CONTENT_TEXT}};
+            line-height: 1.8;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 20px;
+        }
+        
+        .status-button {
+            background-color: {{STATUS_BUTTON}};
+            color: #FFFFFF;
+            padding: 8px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            width: 150px;
+            margin-bottom: 15px;
+        }
+        
+        .disclaimer-box {
+            background-color: {{DISCLAIMER_BACKGROUND}};
+            border-left: 4px solid {{DISCLAIMER_BORDER}};
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 0;
+            padding: 15px;
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        .disclaimer-text {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 11px;
+            line-height: 1.6;
+            font-style: italic;
+            color: {{DISCLAIMER_TEXT_COLOR}};
+        }
+        
+        .disclaimer-text span:first-child {
+            font-size: 16px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .disclaimer-text strong {
+            font-weight: bold;
+            color: {{DISCLAIMER_TEXT_COLOR}};
+        }
+        
+        /* Dividers */
+        .divider {
+            height: 1px;
+            width: 100%;
+            margin: 30px 0;    
+        }
+        
+        .divider-gray {
+            margin-top: 60px;
+            margin-bottom: 60px;
+            height: 2px;
+            background-color: {{DIVIDER_GRAY}};
+        }
+        
+        .divider-blue {
+            background-color: {{DIVIDER_BLUE}};
+            height: 2px;
+        }
+        
+        /* Accessibility Score Container */
+        .accessibility-score-container {
+            margin: 0;
+            background-color: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+        }
+        
+        /* Accessibility Score Section */
+        .accessibility-score-section {
+            margin-top: 0;
+        }
+        
+        .accessibility-score-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+        
+        .accessibility-score-title span:first-child {
+            font-size: 20px;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        /* Lighthouse Score Card */
+        .lighthouse-score-card {
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        .lighthouse-score-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .score-circle-container {
+            flex-shrink: 0;
+        }
+        
+        .score-circle-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .score-circle-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .score-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #3097be;
+            line-height: 1;
+        }
+        
+        .score-total {
+            font-size: 18px;
+            color: #666;
+            line-height: 1;
+        }
+        
+        .lighthouse-score-text {
+            flex: 1;
+        }
+        
+        .lighthouse-score-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 10px;
+        }
+        
+        .lighthouse-info {
+            margin-bottom: 10px;
+        }
+        
+        .lighthouse-info p {
+            font-size: 12px;
+            color: #666;
+            margin: 5px 0;
+        }
+        
+        .issues-total {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 10px;
+        }
+        
+        /* Issues Breakdown - Card Style */
+        .issues-breakdown {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: nowrap;
+        }
+        
+        .issue-card {
+            flex: 1;
+            background-color: #FFFFFF;
+            border: 1px solid {{ISSUE_CARD_BORDER}};
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .issue-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .issue-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+        
+        .issue-severity {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Color coding for issue cards */
+        .issue-card.critical .issue-number,
+        .issue-card.critical .issue-severity {
+            color: #DC3545;
+        }
+        
+        .issue-card.serious .issue-number,
+        .issue-card.serious .issue-severity {
+            color: #D97706;
+        }
+        
+        .issue-card.moderate .issue-number,
+        .issue-card.moderate .issue-severity {
+            color: #F59E0B;
+        }
+        
+        .issue-card.minor .issue-number,
+        .issue-card.minor .issue-severity {
+            color: #10B981;
+        }
+        
+        /* GIGW Compliance Section */
+        .gigw-section {
+            margin-top: 0;
+        }
+        
+        .gigw-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+        
+        .gigw-status-card {
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .gigw-status-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .gigw-status-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .gigw-status-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #FFE5E5;
+            color: #DC3545;
+            border: 1px solid #DC3545;
+        }
+        
+        .gigw-status-badge.passed {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #2E7D32;
+        }
+        
+        .gigw-checks-info {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .gigw-violations {
+            margin-top: 20px;
+        }
+        
+        .gigw-violations-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .gigw-violation-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #FFF9E6;
+            border-left: 4px solid #FFC107;
+            border-radius: 4px;
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        .violation-code {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .violation-description {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* Detailed Issues Section */
+        .detailed-issues-section {
+            margin: 0;
+        }
+        
+        .detailed-issues-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .detailed-issues-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e40b0;
+        }
+        
+        .detailed-issues-title span:first-child {
+            font-size: 20px;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .detailed-issues-intro {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Severity Section Headers */
+        .severity-section {
+            margin-top: 30px;
+        }
+        
+        .severity-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .severity-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .severity-section-title.critical {
+            color: {{CRITICAL_ISSUE_COLOR}};
+        }
+        
+        .severity-section-title.moderate {
+            color: {{MODERATE_ISSUE_COLOR}};
+        }
+        
+        .severity-section-title.serious {
+            color: {{SERIOUS_ISSUE_COLOR}};
+        }
+        
+        .severity-section-title.minor {
+            color: {{MINOR_ISSUE_COLOR}};
+        }
+        
+        .severity-section-title span:first-child {
+            font-size: 18px;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        /* Issue Detail Card - Keep box together, move to next page if doesn't fit */
+        .issue-detail-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+            orphans: 2;
+            widows: 2;
+        }
+        
+        /* Keep card header together with first content */
+        .issue-detail-header {
+            page-break-after: avoid;
+        }
+        
+        .issue-affected-count {
+            page-break-after: avoid;
+        }
+        
+        .issue-description {
+            page-break-after: avoid;
+        }
+        
+        /* Allow severity sections to break naturally between cards */
+        .severity-section {
+            page-break-before: auto;
+        }
+        
+        /* Small boxes stay together - move to next page if doesn't fit */
+        .improvement-box,
+        .fix-box {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        /* Tables: Keep table with card, but allow table to break if very large */
+        .issue-detail-card table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .issue-detail-card table thead {
+            display: table-header-group;
+        }
+        
+        .issue-detail-card table thead tr {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+        }
+        
+        .issue-detail-card table tbody {
+            display: table-row-group;
+        }
+        
+        /* Keep table rows together */
+        .issue-detail-card table tbody tr {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+        }
+        
+        /* For very large tables, allow breaking but keep rows intact */
+        .issue-detail-card table {
+            page-break-inside: auto;
+            break-inside: auto;
+        }
+        
+        /* Large cards - keep together, move to next page if doesn't fit */
+        .gigw-status-card {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        .lighthouse-score-card {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        /* Info boxes - keep together, move to next page if doesn't fit */
+        .info-box-green {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        /* Keep executive summary together if possible */
+        .executive-summary-container {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        /* Cards in executive summary stay together */
+        .card {
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        .issue-detail-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .issue-detail-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            flex: 1;
+        }
+        
+        .severity-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .severity-badge.critical {
+            background-color: #DC3545;
+            color: #FFFFFF;
+        }
+        
+        .severity-badge.serious {
+            background-color: #D97706;
+            color: #FFFFFF;
+        }
+        
+        .severity-badge.moderate {
+            background-color: #F59E0B;
+            color: #FFFFFF;
+        }
+        
+        .severity-badge.minor {
+            background-color: #10B981;
+            color: #FFFFFF;
+        }
+        
+        .issue-affected-count {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        .issue-description {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .improvement-box {
+            background-color: #E3F2FD;
+            border: 1px solid #90CAF9;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .improvement-box-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1565C0;
+            margin-bottom: 6px;
+        }
+        
+        .improvement-box-header span:first-child {
+            font-size: 14px;
+        }
+        
+        .improvement-box-content {
+            font-size: 11px;
+            color: #1565C0;
+            line-height: 1.5;
+        }
+        
+        .issue-owner {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background-color: #F5F5F5;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        
+        .issue-owner span:first-child {
+            font-size: 12px;
+        }
+        
+        .fix-box {
+            background-color: #E8F5E9;
+            border: 1px solid #81C784;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .fix-box-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2E7D32;
+            margin-bottom: 6px;
+        }
+        
+        .fix-box-header span:first-child {
+            font-size: 14px;
+        }
+        
+        .fix-box-content {
+            font-size: 11px;
+            color: #1B5E20;
+            line-height: 1.5;
+        }
+        
+        .affected-elements-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 11px;
+        }
+        
+        .affected-elements-table th,
+        .affected-elements-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .affected-elements-table th {
+            background-color: #F5F5F5;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .affected-elements-table td {
+            color: #666;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+        }
+        
+        .affected-elements-more {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-top: 8px;
+        }
+        
+        /* Sector-Specific Guidance */
+        .sector-guidance-box {
+            background-color: #FFF9E6;
+            border: 1px solid #FFC107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            page-break-inside: avoid;
+            break-inside: avoid-page;
+            page-break-before: auto;
+        }
+        
+        .sector-guidance-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .sector-guidance-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .sector-guidance-title span:first-child {
+            font-size: 18px;
+        }
+        
+        .sector-guidance-content {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .sector-guidance-content strong {
+            font-weight: 600;
+            color: #000;
+        }
+        
+        /* Technical Accessibility Assessment Summary */
+        .assessment-summary-container {
+            margin: 0;
+            background-color: #FFFFFF;
+            border: 2px solid #92c5fd;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        
+        .assessment-summary-header {
+            margin-bottom: 24px;
+        }
+        
+        .assessment-summary-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+        
+        .assessment-summary-title span:first-child {
+            font-size: 24px;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .assessment-summary-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-left: 34px;
+        }
+        
+        .assessment-details-box {
+            background-color: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .assessment-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        
+        .assessment-detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .assessment-detail-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .assessment-detail-value {
+            font-size: 13px;
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .assessment-score {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3097be;
+        }
+        
+        .assessment-issue-count {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .assessment-issue-count.critical {
+            background-color: #DC3545;
+            color: #FFFFFF;
+        }
+        
+        .assessment-issue-count.serious {
+            background-color: #D97706;
+            color: #FFFFFF;
+        }
+        
+        .assessment-issue-count.moderate {
+            background-color: #F59E0B;
+            color: #FFFFFF;
+        }
+        
+        .assessment-issue-count.minor {
+            background-color: #DC3545;
+            color: #FFFFFF;
+        }
+        
+        .assessment-status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #FFE5E5;
+            color: #DC3545;
+        }
+        
+        .assessment-statement-box {
+            background-color: #E3F2FD;
+            border: 1.5px solid #90CAF9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        
+        .assessment-statement-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1565C0;
+            margin-bottom: 12px;
+        }
+        
+        .assessment-statement-title span:first-child {
+            font-size: 18px;
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Arial', sans-serif;
+        }
+        
+        .assessment-statement-content {
+            font-size: 12px;
+            color: #1565C0;
+            line-height: 1.7;
+        }
+        
+        .assessment-statement-content strong {
+            font-weight: 600;
+        }
+        
+        .generated-by-box {
+            /* background-color: #F5F5F5;
+            border: 1px solid #E0E0E0; */
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .generated-by-text {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- First Page -->
+    <div class="page">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="logo">
+                <span>{{SEARCH_ICON}}</span>
+                <span class="logo-text">AccessiScan</span>
+            </div>
+            <div class="main-title">
+                WCAG 2.1 AA / IS 17802 Technical Accessibility Audit Report
+            </div>
+            <div class="subtitle">
+                Powered by axe-core & Lighthouse - Automated Technical Evaluation.
+            </div>
+            <div class="website-info">
+                Website: https://poushtiqfoods.com<br>
+                Name: Poushtiq Foods<br>
+                Generated: 6/12/2025, 2:53:32 pm IST
+            </div>
+        </div>
+        
+        <div style="padding: 0 40px 40px 40px;">
+            <!-- Executive Summary Container Box -->
+            <div class="executive-summary-container">
+            <div class="executive-summary">
+                <div class="section-title">
+                    <span>{{CHART_ICON}}</span>
+                    Executive Summary
+                </div>
+                
+                <!-- What Did We Scan? Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>{{REFRESH_ICON}}</span>
+                        What Did We Scan?
+                    </div>
+                    <div class="card-content">
+                        <strong>https://poushtiqfoods.com</strong> was scanned on <strong>6/12/2025, 2:53:32 pm IST</strong> using automated accessibility testing tools (axe-core & Lighthouse) aligned with WCAG 2.1 Level AA standards.
+                    </div>
+                </div>
+                
+                <!-- Business Risk Level Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>{{WARNING_ICON}}</span>
+                        Business Risk Level
+                    </div>
+                    <div>
+                        <div class="risk-label">High Risk</div>
+                    </div>
+                    <div class="card-content">
+                        Critical accessibility barriers detected that may block users with disabilities and expose your organization to compliance risks under the RPWD Act 2016.
+                    </div>
+                </div>
+                
+                <!-- What Should We Do Next? Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>{{CHECKMARK_ICON}}</span>
+                        What Should We Do Next?
+                    </div>
+                    <ul class="bullet-list">
+                        <li>Fix all Critical issues within 7 days - These completely block access for users with disabilities.</li>
+                        <li>Address Serious issues within 30 days - These significantly impact accessibility.</li>
+                        <li>Re-scan after fixes; consider manual audit – Automated tools detect ~60-70% of issues. Manual testing by accessibility experts is recommended for complete compliance.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+    <!-- Second Page -->
+    <div class="page">
+        <div style="padding: 40px;">
+            <!-- Green Box -->
+            <div class="info-box-green">
+                <div class="green-box-title">
+                    <span>{{INDIA_ICON}}</span>
+                    India Accessibility Compliance Context (RPWD Act + IS 17802)
+                </div>
+                <div class="green-box-content">
+                    Sections 40-42 and 46 of the Rights of Persons with Disabilities (RPWD) Act, 2016 mandate accessible information and communication technology (ICT) for persons with disabilities across public and private sectors.<br><br>
+                    RPWD Rules 2017 and the 2023 Amendment link ICT accessibility in India to IS 17802:2022, which is harmonized with WCAG 2.1 Level AA guidelines.<br><br>
+                    This report provides a technical assessment based on WCAG 2.1 AA, which forms the underlying technical basis for IS 17802 compliance in India.
+                </div>
+                <div class="status-button">
+                    Status: At Risk
+                </div>
+                <!-- Disclaimer Box -->
+                <div class="disclaimer-box">
+                    <div class="disclaimer-text">
+                        <span>{{DOCUMENT_ICON}}</span>
+                        <span><strong>Disclaimer:</strong> This is a technical assessment based on automated testing, not a legal compliance certification. For formal compliance under the RPWD Act 2016, combine this report with manual auditing by certified accessibility experts.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Horizontal Divider after India Accessibility Compliance -->
+            <div class="divider divider-gray"></div>
+            
+            <!-- Accessibility Score Container -->
+            <div class="accessibility-score-container">
+                <div class="accessibility-score-section">
+                    <div class="accessibility-score-title">
+                        <span>📈</span>
+                        Accessibility Score
+                    </div>
+                    
+                    <!-- Horizontal Divider after Accessibility Score heading -->
+                    <div class="divider divider-blue"></div>
+                    
+                    <!-- Lighthouse Accessibility Score Card -->
+                    <div class="lighthouse-score-card">
+                    <div class="lighthouse-score-header">
+                        <!-- Circular Indicator on Left -->
+                        <div class="score-circle-container">
+                            <div class="score-circle-wrapper">
+                                <svg class="score-circle" viewBox="0 0 150 150">
+                                    <!-- Background circle -->
+                                    <circle cx="75" cy="75" r="70" fill="none" stroke="#E0E0E0" stroke-width="12"/>
+                                    <!-- Progress circle (86% = 309.6 degrees) -->
+                                    <circle cx="75" cy="75" r="70" fill="none" stroke="#3097be" stroke-width="12" 
+                                            stroke-dasharray="435.8 435.8" 
+                                            stroke-dashoffset="126.2"
+                                            stroke-linecap="round"
+                                            transform="rotate(-90 75 75)"/>
+                                </svg>
+                                <div class="score-circle-inner">
+                                    <div class="score-number">86</div>
+                                    <div class="score-total">/100</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Content on Right -->
+                        <div class="lighthouse-score-text">
+                            <h3>Lighthouse Accessibility Score</h3>
+                            <div class="lighthouse-info">
+                                <p>Based on automated WCAG 2.1 Level AA checks</p>
+                                <div class="issues-total">Total of 411 accessibility issues detected</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Issues Breakdown - Card Style -->
+                    <div class="issues-breakdown">
+                        <div class="issue-card critical">
+                            <span class="issue-icon">🚨</span>
+                            <div class="issue-number">7</div>
+                            <div class="issue-severity">Critical</div>
+                        </div>
+                        
+                        <div class="issue-card serious">
+                            <span class="issue-icon">⚠️</span>
+                            <div class="issue-number">33</div>
+                            <div class="issue-severity">Serious</div>
+                        </div>
+                        
+                        <div class="issue-card moderate">
+                            <span class="issue-icon">⚡</span>
+                            <div class="issue-number">364</div>
+                            <div class="issue-severity">Moderate</div>
+                        </div>
+                        
+                        <div class="issue-card minor">
+                            <span class="issue-icon">ℹ️</span>
+                            <div class="issue-number">7</div>
+                            <div class="issue-severity">Minor</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Third Page - GIGW 3.0 Compliance Section -->
+    <div class="page">
+        <div style="padding: 40px;">
+            <!-- GIGW 3.0 Compliance Section -->
+            <div class="gigw-section">
+                <div class="gigw-title">GIGW 3.0 Compliance (Indian Government Guidelines)</div>
+                
+                <div class="gigw-status-card">
+                    <div class="gigw-status-header">
+                        <span class="gigw-status-label">Status:</span>
+                        <span class="gigw-status-badge">FAILED</span>
+                    </div>
+                    
+                    <div class="gigw-checks-info">5 out of 8 checks passed</div>
+                    
+                    <div class="gigw-violations">
+                        <div class="gigw-violations-title">GIGW Violations (3):</div>
+                        
+                        <div class="gigw-violation-item">
+                            <div class="violation-code">GIGW 3.0 - 4.1.1 Text Alternatives</div>
+                            <div class="violation-description">Found 2 image(s) without alt text. All images must have descriptive alt attributes.</div>
+                        </div>
+                        
+                        <div class="gigw-violation-item">
+                            <div class="violation-code">GIGW 3.0 - 4.2.4 Form Labels</div>
+                            <div class="violation-description">Found 1 form input(s) without associated labels. All form controls must have labels.</div>
+                        </div>
+                        
+                        <div class="gigw-violation-item">
+                            <div class="violation-code">GIGW 3.0 - 4.2.1 Skip Navigation</div>
+                            <div class="violation-description">Page missing "Skip to main content" link. This link should be provided for keyboard users.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detailed Issues Header -->
+            <div class="detailed-issues-section">
+                <div class="detailed-issues-header">
+                    <span>{{SEARCH_ICON}}</span>
+                    <div class="detailed-issues-title">
+                        <span>🔍</span>
+                        Detailed Issues (411 total)
+                    </div>
+                </div>
+                
+                <!-- Divider -->
+                <div class="divider divider-blue"></div>
+                
+                <div class="detailed-issues-intro">
+                    Issues are grouped by type to reduce repetition. Each group shows affected elements and actionable fixes.
+                </div>
+                
+                <!-- Critical Issues Section -->
+                <div class="severity-section">
+                    <div class="severity-section-header">
+                        <span>🚨</span>
+                        <div class="severity-section-title critical">
+                            Critical Issues (7 instances)
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: button-name -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">button-name</div>
+                            <span class="severity-badge critical">CRITICAL</span>
+                        </div>
+                        <div class="issue-affected-count">7 elements affected</div>
+                        <div class="issue-description">Ensure buttons have discernible text.</div>
+                        
+                        <div class="improvement-box">
+                            <div class="improvement-box-header">
+                                <span>💡</span>
+                                <span>What Improves If Fixed?</span>
+                            </div>
+                            <div class="improvement-box-content">
+                                7 button(s) will have accessible names, allowing screen reader users to understand their purpose.
+                            </div>
+                        </div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Developer</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Add accessible text to the button using textContent, aria-label, or aria-labelledby.
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div style="font-size: 11px; font-weight: 600; color: #333; margin-bottom: 8px;">Affected Element (CSS Selector)</div>
+                            <table class="affected-elements-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Affected Element (CSS Selector)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>.Header_mobileNavHeader__nR-9t > .Header_iconButton__1iyJP</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>.ProductSlider_navigationButton__6oP81:nth-child(1)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>.ProductSlider_navigationButton__6oP81:nth-child(2)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>.CategorySlider_navigationButton__hkaJ9:nth-child(1)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>.CategorySlider_navigationButton__hkaJ9:nth-child(2)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="affected-elements-more">... and 2 more</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Serious Issues Section -->
+                <div class="severity-section">
+                    <div class="severity-section-header">
+                        <span>⚠️</span>
+                        <div class="severity-section-title serious">
+                            Serious Issues (33 instances)
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: color-contrast -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">color-contrast</div>
+                            <span class="severity-badge serious">SERIOUS</span>
+                        </div>
+                        <div class="issue-affected-count">31 elements affected</div>
+                        <div class="issue-description">Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds.</div>
+                        
+                        <div class="improvement-box">
+                            <div class="improvement-box-header">
+                                <span>💡</span>
+                                <span>What Improves If Fixed?</span>
+                            </div>
+                            <div class="improvement-box-content">
+                                All 31 element(s) will meet the minimum 4.5:1 contrast ratio, making text readable for users with low vision.
+                            </div>
+                        </div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Designer</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Increase color contrast ratio to at least 4.5:1 for normal text or 3:1 for large text.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: link-name -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">link-name</div>
+                            <span class="severity-badge serious">SERIOUS</span>
+                        </div>
+                        <div class="issue-affected-count">2 elements affected</div>
+                        <div class="issue-description">Ensure links have discernible text.</div>
+                        
+                        <div class="improvement-box">
+                            <div class="improvement-box-header">
+                                <span>💡</span>
+                                <span>What Improves If Fixed?</span>
+                            </div>
+                            <div class="improvement-box-content">
+                                2 link(s) will have descriptive text, helping users understand where they lead.
+                            </div>
+                        </div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Developer</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Ensure links have descriptive text. Avoid 'click here' or empty links.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Moderate Issues Section -->
+                <div class="severity-section">
+                    <div class="severity-section-header">
+                        <span>⚡</span>
+                        <div class="severity-section-title moderate">
+                            Moderate Issues (364 instances)
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: region -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">region</div>
+                            <span class="severity-badge moderate">MODERATE</span>
+                        </div>
+                        <div class="issue-affected-count">361 elements affected</div>
+                        <div class="issue-description">Ensure all page content is contained by landmarks.</div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Developer</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Review the WCAG 2.1 guidelines for this rule and implement the recommended fixes.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: landmark-unique -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">landmark-unique</div>
+                            <span class="severity-badge moderate">MODERATE</span>
+                        </div>
+                        <div class="issue-affected-count">1 element affected</div>
+                        <div class="issue-description">Ensure landmarks are unique.</div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Developer</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Review the WCAG 2.1 guidelines for this rule and implement the recommended fixes.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: page-has-heading-one -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">page-has-heading-one</div>
+                            <span class="severity-badge moderate">MODERATE</span>
+                        </div>
+                        <div class="issue-affected-count">1 element affected</div>
+                        <div class="issue-description">Ensure that the page, or at least one of its frames contains a level-one heading.</div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Developer</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Review the WCAG 2.1 guidelines for this rule and implement the recommended fixes.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: landmark-one-main -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">landmark-one-main</div>
+                            <span class="severity-badge moderate">MODERATE</span>
+                        </div>
+                        <div class="issue-affected-count">1 element affected</div>
+                        <div class="issue-description">Ensure the document has a main landmark.</div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Developer</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Review the WCAG 2.1 guidelines for this rule and implement the recommended fixes.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Minor Issues Section -->
+                <div class="severity-section">
+                    <div class="severity-section-header">
+                        <span>ℹ️</span>
+                        <div class="severity-section-title minor">
+                            Minor Issues (7 instances)
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Card: image-redundant-alt -->
+                    <div class="issue-detail-card">
+                        <div class="issue-detail-header">
+                            <div class="issue-detail-title">image-redundant-alt</div>
+                            <span class="severity-badge minor">MINOR</span>
+                        </div>
+                        <div class="issue-affected-count">7 elements affected</div>
+                        <div class="issue-description">Ensure image alternative is not repeated as text.</div>
+                        
+                        <div class="issue-owner">
+                            <span>👤</span>
+                            <span>Owner: Content Team</span>
+                        </div>
+                        
+                        <div class="fix-box">
+                            <div class="fix-box-header">
+                                <span>✅</span>
+                                <span>How to Fix</span>
+                            </div>
+                            <div class="fix-box-content">
+                                Review the WCAG 2.1 guidelines for this rule and implement the recommended fixes.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sector-Specific Guidance Section -->
+                <div class="sector-guidance-box">
+                    <div class="sector-guidance-header">
+                        <span>🎯</span>
+                        <div class="sector-guidance-title">
+                            Sector-Specific Guidance (India)
+                        </div>
+                    </div>
+                    <div class="sector-guidance-content">
+                        <strong>General Guidance:</strong> Fix all critical and serious issues identified in this report, then re-scan monthly to maintain an accessible user experience. Consider conducting periodic manual audits (semi-annually) to ensure comprehensive accessibility compliance and improve user satisfaction.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Technical Accessibility Assessment Summary Page -->
+    <div class="page">
+        <div style="padding: 40px;">
+            
+            
+            <!-- Technical Accessibility Assessment Summary Container -->
+            <div class="assessment-summary-container">
+                <div class="assessment-summary-header">
+                    <div class="assessment-summary-title">
+                        <span>📚</span>
+                        Technical Accessibility Assessment Summary
+                    </div>
+                    <div class="assessment-summary-subtitle">
+                        WCAG 2.1 AA / IS 17802:2022 Basis
+                    </div>
+                </div>
+                
+                <!-- Assessment Details Box -->
+                <div class="assessment-details-box">
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">Website:</div>
+                        <div class="assessment-detail-value">https://poushtiqfoods.com</div>
+                    </div>
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">Scan Date & Time:</div>
+                        <div class="assessment-detail-value">6/12/2025, 2:53:32 pm IST</div>
+                    </div>
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">Accessibility Score:</div>
+                        <div class="assessment-detail-value">
+                            <span class="assessment-score">86</span>/100
+                        </div>
+                    </div>
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">Critical Issues:</div>
+                        <div class="assessment-detail-value">
+                            <span class="assessment-issue-count critical">7</span>
+                        </div>
+                    </div>
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">Serious Issues:</div>
+                        <div class="assessment-detail-value">
+                            <span class="assessment-issue-count serious">33</span>
+                        </div>
+                    </div>
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">Moderate Issues:</div>
+                        <div class="assessment-detail-value">
+                            <span class="assessment-issue-count moderate">364</span>
+                        </div>
+                    </div>
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">Minor Issues:</div>
+                        <div class="assessment-detail-value">
+                            <span class="assessment-issue-count minor">7</span>
+                        </div>
+                    </div>
+                    <div class="assessment-detail-row">
+                        <div class="assessment-detail-label">India Compliance Status:</div>
+                        <div class="assessment-detail-value">
+                            <span class="assessment-status-badge">At Risk</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Assessment Statement Box -->
+                <div class="assessment-statement-box">
+                    <div class="assessment-statement-title">
+                        <span>{{DOCUMENT_ICON}}</span>
+                        Assessment Statement
+                    </div>
+                    <div class="assessment-statement-content">
+                        <p style="margin-bottom: 12px;">
+                            This automated report evaluates your web page against <strong>WCAG 2.1 Level AA</strong> guidelines, which underlie <strong>IS 17802:2022</strong> for ICT accessibility in India. It supports, but does not replace, formal compliance work under the <strong>Rights of Persons with Disabilities (RPWD) Act 2016</strong>.
+                        </p>
+                        <p>
+                            Automated testing detects approximately 60-70% of accessibility issues. For complete compliance validation, manual testing by certified accessibility experts is strongly recommended.
+                        </p>
+                    </div>
+                </div>
+                <!-- Generated By Box -->
+            <div class="generated-by-box">
+                <div class="generated-by-text">
+                    Generated by AccessiScan using axe-core & Google Lighthouse<br>
+                    This is a technical assessment, not a legal compliance certification.
+                </div>
+            </div>
+            </div>
+            
+            <!-- Bottom Section -->
+            <div style="margin-top: 60px; text-align: center;">
+                <div style="font-size: 20px; font-weight: 700; color: #3097be; margin-bottom: 8px;">
+                    AccessiScan by Your Company
+                </div>
+                <div style="font-size: 13px; color: #666; margin-bottom: 8px;">
+                    Technical Accessibility Assessment Report
+                </div>
+                <div style="font-size: 12px; color: #666;">
+                    Report generated on 6/12/2025, 2:53:32 pm IST
+                </div>
+                <div style="margin-top: 16px; padding: 12px; background-color: #FFF9E6; border-left: 4px solid #FFC107; border-radius: 4px; text-align: left; display: inline-block;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                        <span style="font-size: 16px;">⚠️</span>
+                        <div style="font-size: 12px; color: #333;">
+                            <strong>Important:</strong> Automated checks cannot detect 100% of accessibility issues. Manual testing is recommended for complete compliance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

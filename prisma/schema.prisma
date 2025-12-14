@@ -1,0 +1,48 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Website {
+  id        String   @id @default(cuid())
+  url       String
+  name      String?
+  createdAt DateTime @default(now())
+  scans     Scan[]
+}
+
+model Scan {
+  id            String   @id @default(cuid())
+  websiteId     String
+  status        String   @default("queued")
+  score         Int?
+  reportUrl     String?
+  metaJson      Json?
+  pageUrl       String?
+  parentScanId  String?
+  totalPages    Int?
+  completedPages Int?     @default(0)
+  createdAt     DateTime @default(now())
+
+  website       Website  @relation(fields: [websiteId], references: [id])
+  issues        Issue[]
+  parentScan    Scan?    @relation("ScanHierarchy", fields: [parentScanId], references: [id])
+  childScans    Scan[]   @relation("ScanHierarchy")
+}
+
+model Issue {
+  id          String   @id @default(cuid())
+  scanId      String
+  ruleId      String
+  severity    String
+  selector    String?
+  snippet     String?
+  description String
+
+  scan        Scan     @relation(fields: [scanId], references: [id])
+}
