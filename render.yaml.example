@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: accessibility-backend
+    env: node
+    buildCommand: npm run build:render
+    startCommand: npm start
+    envVars:
+      # IMPORTANT: Set these values in Render Dashboard, DO NOT commit secrets
+      # Copy this file to render.yaml and fill in your values, or set directly in Render Dashboard
+      - key: DATABASE_URL
+        value: "postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-1-[REGION].pooler.supabase.com:6543/postgres?sslmode=require"
+      - key: DATABASE_URL_DIRECT
+        value: "postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require"
+      - key: STORAGE_TYPE
+        value: s3
+      - key: S3_BUCKET_NAME
+        value: "your-bucket-name"
+      - key: S3_REGION
+        value: "ap-south-1"
+      - key: AWS_ACCESS_KEY_ID
+        value: "your-aws-access-key-id"
+      - key: AWS_SECRET_ACCESS_KEY
+        value: "your-aws-secret-access-key"
+      - key: BRAND_NAME
+        value: DesiA11y
+      - key: DASHBOARD_URL
+        value: "https://your-frontend-url.com"
+

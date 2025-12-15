@@ -71,3 +71,8 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+# Configuration files with secrets
+render.yaml
+*.yaml.local
+*.yml.local
