@@ -6,7 +6,7 @@
     "dev": "ts-node-dev src/server.ts",
     "test:db": "ts-node src/db/testConnection.ts",
     "build": "tsc && prisma generate",
-    "build:render": "node scripts/migrate.js && npm run build",
+    "build:render": "npm run build",
     "migrate": "node scripts/migrate.js",
     "start": "node dist/server.js",
     "postinstall": "prisma generate && npm run setup:chrome",
