@@ -7,8 +7,6 @@ import puppeteer, { Browser, Page, PDFOptions } from 'puppeteer';
 import * as ejs from 'ejs';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { homedir } from 'os';
-import { existsSync } from 'fs';
 
 // Import utilities
 import { enrichIssues, calculateWCAGConformance, groupIssuesByWCAGCategory } from '../utils/wcag-categorizer';
@@ -49,26 +47,7 @@ export interface PDFGenerationData {
   dashboardUrl: string;
 }
 
-/**
- * Get Chrome executable path
- */
-function getChromePath(): string | undefined {
-  const cacheDir = join(homedir(), '.cache', 'puppeteer', 'chrome');
-  
-  const possiblePaths = [
-    join(cacheDir, 'mac-143.0.7499.40/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    join(cacheDir, 'mac_arm-143.0.7499.40/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    join(cacheDir, 'mac-121.0.6167.85/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-  ];
-
-  for (const path of possiblePaths) {
-    if (existsSync(path)) {
-      return path;
-    }
-  }
-
-  return undefined;
-}
+import { getChromePath } from '../utils/chromePath';
 
 /**
  * Main PDF generation function
@@ -174,9 +153,8 @@ async function generatePDFWithStrategies(html: string): Promise<Buffer> {
  */
 async function generateFullQualityPDF(html: string): Promise<Buffer> {
   const chromePath = getChromePath();
-  const browser: Browser = await puppeteer.launch({
+  const launchOptions: any = {
     headless: true,
-    executablePath: chromePath,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -185,7 +163,14 @@ async function generateFullQualityPDF(html: string): Promise<Buffer> {
       '--disable-web-security',
       '--font-render-hinting=none'
     ],
-  });
+  };
+  
+  // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+  if (chromePath) {
+    launchOptions.executablePath = chromePath;
+  }
+  
+  const browser: Browser = await puppeteer.launch(launchOptions);
 
   try {
     const page: Page = await browser.newPage();
@@ -235,11 +220,17 @@ async function generateFullQualityPDF(html: string): Promise<Buffer> {
  */
 async function generateSimplifiedPDF(html: string): Promise<Buffer> {
   const chromePath = getChromePath();
-  const browser: Browser = await puppeteer.launch({
+  const launchOptions: any = {
     headless: true,
-    executablePath: chromePath,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+  };
+  
+  // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+  if (chromePath) {
+    launchOptions.executablePath = chromePath;
+  }
+  
+  const browser: Browser = await puppeteer.launch(launchOptions);
 
   try {
     const page: Page = await browser.newPage();
@@ -270,11 +261,17 @@ async function generateSimplifiedPDF(html: string): Promise<Buffer> {
  */
 async function generateBasicPDF(html: string): Promise<Buffer> {
   const chromePath = getChromePath();
-  const browser: Browser = await puppeteer.launch({
+  const launchOptions: any = {
     headless: true,
-    executablePath: chromePath,
-    args: ['--no-sandbox'],
-  });
+    args: ['--no-sandbox', '--disable-dev-shm-usage'],
+  };
+  
+  // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+  if (chromePath) {
+    launchOptions.executablePath = chromePath;
+  }
+  
+  const browser: Browser = await puppeteer.launch(launchOptions);
 
   try {
     const page: Page = await browser.newPage();

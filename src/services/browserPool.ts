@@ -6,9 +6,7 @@
  */
 
 import puppeteer, { Browser } from 'puppeteer';
-import { join } from 'path';
-import { existsSync } from 'fs';
-import { homedir } from 'os';
+import { getChromePath } from '../utils/chromePath';
 
 class BrowserPool {
   private browsers: Browser[] = [];
@@ -20,21 +18,7 @@ class BrowserPool {
    * Get Chrome executable path
    */
   private getChromePath(): string | undefined {
-    const cacheDir = join(homedir(), '.cache', 'puppeteer', 'chrome');
-    
-    const possiblePaths = [
-      join(cacheDir, 'mac-143.0.7499.40/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-      join(cacheDir, 'mac_arm-143.0.7499.40/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-      join(cacheDir, 'mac-121.0.6167.85/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    ];
-
-    for (const path of possiblePaths) {
-      if (existsSync(path)) {
-        return path;
-      }
-    }
-
-    return undefined;
+    return getChromePath();
   }
 
   /**
@@ -49,11 +33,17 @@ class BrowserPool {
     // Pre-launch browsers for reuse
     for (let i = 0; i < this.maxBrowsers; i++) {
       try {
-        const browser = await puppeteer.launch({
+        const launchOptions: any = {
           headless: 'new' as any,
-          args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          executablePath: chromePath,
-        });
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        };
+        
+        // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+        if (chromePath) {
+          launchOptions.executablePath = chromePath;
+        }
+        
+        const browser = await puppeteer.launch(launchOptions);
         this.browsers.push(browser);
       } catch (error) {
         console.error(`Failed to launch browser ${i + 1}:`, error);
@@ -75,11 +65,17 @@ class BrowserPool {
         console.warn('⚠️  Browser pool initialization failed, using fallback:', error);
         // Fallback: launch a new browser
         const chromePath = this.getChromePath();
-        return await puppeteer.launch({
+        const launchOptions: any = {
           headless: 'new' as any,
-          args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          executablePath: chromePath,
-        });
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        };
+        
+        // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+        if (chromePath) {
+          launchOptions.executablePath = chromePath;
+        }
+        
+        return await puppeteer.launch(launchOptions);
       }
     }
 
@@ -87,11 +83,17 @@ class BrowserPool {
       // Fallback: launch a new browser if pool is empty
       console.warn('⚠️  Browser pool is empty, launching new browser');
       const chromePath = this.getChromePath();
-      return await puppeteer.launch({
+      const launchOptions: any = {
         headless: 'new' as any,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: chromePath,
-      });
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      };
+      
+      // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+      if (chromePath) {
+        launchOptions.executablePath = chromePath;
+      }
+      
+      return await puppeteer.launch(launchOptions);
     }
 
     // Round-robin selection
@@ -105,11 +107,17 @@ class BrowserPool {
       this.browsers = this.browsers.filter(b => b !== browser);
       // Launch new browser
       const chromePath = this.getChromePath();
-      const newBrowser = await puppeteer.launch({
+      const launchOptions: any = {
         headless: 'new' as any,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: chromePath,
-      });
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      };
+      
+      // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+      if (chromePath) {
+        launchOptions.executablePath = chromePath;
+      }
+      
+      const newBrowser = await puppeteer.launch(launchOptions);
       this.browsers.push(newBrowser);
       return newBrowser;
     }

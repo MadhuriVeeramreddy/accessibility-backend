@@ -1,43 +1,26 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
-import { join } from 'path';
-import { existsSync } from 'fs';
-import { homedir } from 'os';
-
-// Get Chrome executable path
-const getChromePath = (): string | undefined => {
-  const cacheDir = join(homedir(), '.cache', 'puppeteer', 'chrome');
-  
-  // Try to find installed Chrome versions
-  const possiblePaths = [
-    // Latest version
-    join(cacheDir, 'mac-143.0.7499.40/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    // ARM version
-    join(cacheDir, 'mac_arm-143.0.7499.40/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    // Fallback to older version
-    join(cacheDir, 'mac-121.0.6167.85/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-  ];
-
-  for (const path of possiblePaths) {
-    if (existsSync(path)) {
-      console.log('Using Chrome at:', path);
-      return path;
-    }
-  }
-
-  // Let Puppeteer auto-detect
-  console.log('Chrome not found in cache, using Puppeteer auto-detection');
-  return undefined;
-};
+import { getChromePath } from '../utils/chromePath';
 
 // Launch browser in headless mode
 export const launchBrowser = async (): Promise<Browser> => {
   const chromePath = getChromePath();
   
-  const browser = await puppeteer.launch({
+  const launchOptions: any = {
     headless: 'new' as any, // Use new headless mode
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: chromePath, // Explicitly set Chrome path
-  });
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
+  };
+  
+  // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+  if (chromePath) {
+    launchOptions.executablePath = chromePath;
+  }
+  
+  const browser = await puppeteer.launch(launchOptions);
   
   return browser;
 };

@@ -1,7 +1,6 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
-import { homedir } from 'os';
 import { renderTemplate } from '../utils/templateRenderer';
 
 /**
@@ -12,26 +11,7 @@ interface PDFGeneratorOptions {
   fileName?: string;
 }
 
-/**
- * Get Chrome executable path
- */
-function getChromePath(): string | undefined {
-  const cacheDir = join(homedir(), '.cache', 'puppeteer', 'chrome');
-  
-  const possiblePaths = [
-    join(cacheDir, 'mac-143.0.7499.40/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    join(cacheDir, 'mac_arm-143.0.7499.40/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    join(cacheDir, 'mac-121.0.6167.85/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-  ];
-
-  for (const path of possiblePaths) {
-    if (existsSync(path)) {
-      return path;
-    }
-  }
-
-  return undefined;
-}
+import { getChromePath } from '../utils/chromePath';
 
 /**
  * PDF Data interface
@@ -118,11 +98,17 @@ export async function generatePDF(data?: PDFData): Promise<Buffer> {
   };
   
   const chromePath = getChromePath();
-  const browser: Browser = await puppeteer.launch({
+  const launchOptions: any = {
     headless: true,
-    executablePath: chromePath,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+  };
+  
+  // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+  if (chromePath) {
+    launchOptions.executablePath = chromePath;
+  }
+  
+  const browser: Browser = await puppeteer.launch(launchOptions);
   
   try {
     const page: Page = await browser.newPage();

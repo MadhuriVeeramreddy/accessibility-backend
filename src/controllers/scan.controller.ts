@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../db/prismaClient';
 import { addScanJob } from '../queues/backgroundProcessor';
+import { storageService } from '../services/storage.service';
 
 // Create a new scan
 export const createScan = async (req: Request, res: Response) => {
@@ -63,6 +64,36 @@ export const getScanById = async (req: Request, res: Response) => {
   }
 };
 
+// Helper function to generate PDF for a scan
+async function generatePDFForScan(scan: any): Promise<Buffer> {
+  const { generatePDF } = await import('../services/pdfGenerator');
+  
+  // Extract GIGW results from metaJson
+  const gigwResults = (scan.metaJson as any)?.gigw || null;
+
+  // Generate PDF
+  return await generatePDF({
+    website: {
+      url: scan.website.url,
+      name: scan.website.name || undefined,
+    },
+    pageUrl: scan.pageUrl || undefined,
+    score: scan.score || null,
+    issues: scan.issues.map((issue: any) => ({
+      ruleId: issue.ruleId,
+      severity: issue.severity,
+      selector: issue.selector || undefined,
+      description: issue.description,
+      snippet: issue.snippet || undefined,
+    })),
+    gigwResults: gigwResults || undefined,
+    scanDate: scan.createdAt.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+    scanId: scan.id,
+    brandName: process.env.BRAND_NAME || 'DesiA11y',
+    dashboardUrl: `${process.env.DASHBOARD_URL || 'http://localhost:3000'}/scan/${scan.id}`,
+  });
+}
+
 // Generate and download PDF report on-demand
 export const downloadPDF = async (req: Request, res: Response) => {
   try {
@@ -86,33 +117,45 @@ export const downloadPDF = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Scan is not completed yet' });
     }
 
-    // Generate PDF on-demand (no storage needed)
-    const { generatePDF } = await import('../services/pdfGenerator');
+    // Check if PDF already exists in storage
+    let pdfBuffer: Buffer;
+    const pdfExists = await storageService.exists(id);
     
-    // Extract GIGW results from metaJson
-    const gigwResults = (scan.metaJson as any)?.gigw || null;
-
-    // Generate PDF
-    const pdfBuffer = await generatePDF({
-      website: {
-        url: scan.website.url,
-        name: scan.website.name || undefined,
-      },
-      pageUrl: scan.pageUrl || undefined,
-      score: scan.score || null,
-      issues: scan.issues.map((issue) => ({
-        ruleId: issue.ruleId,
-        severity: issue.severity,
-        selector: issue.selector || undefined,
-        description: issue.description,
-        snippet: issue.snippet || undefined,
-      })),
-      gigwResults: gigwResults || undefined,
-      scanDate: scan.createdAt.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-      scanId: scan.id,
-      brandName: process.env.BRAND_NAME || 'DesiA11y',
-      dashboardUrl: `${process.env.DASHBOARD_URL || 'http://localhost:3000'}/scan/${scan.id}`,
-    });
+    if (pdfExists) {
+      // Get PDF from storage (S3 or local)
+      console.log(`📦 PDF found in storage for scan ${id}, retrieving...`);
+      const storedPdf = await storageService.get(id);
+      if (storedPdf) {
+        pdfBuffer = storedPdf;
+        console.log(`✅ PDF retrieved from storage (${pdfBuffer.length} bytes)`);
+      } else {
+        // Fallback: generate if retrieval failed
+        console.log('⚠️  PDF exists but retrieval failed, generating new PDF...');
+        pdfBuffer = await generatePDFForScan(scan);
+      }
+    } else {
+      // Generate PDF on-demand
+      console.log(`📄 Generating PDF for scan ${id}...`);
+      pdfBuffer = await generatePDFForScan(scan);
+      
+      // Save PDF to storage (S3 or local)
+      try {
+        await storageService.save(id, pdfBuffer);
+        console.log(`✅ PDF saved to storage (${pdfBuffer.length} bytes)`);
+        
+        // Update scan with report URL if using S3
+        const reportUrl = await storageService.getUrl(id);
+        if (reportUrl) {
+          await prisma.scan.update({
+            where: { id },
+            data: { reportUrl },
+          });
+        }
+      } catch (storageError) {
+        console.error('⚠️  Failed to save PDF to storage:', storageError);
+        // Continue anyway - PDF is still sent to user
+      }
+    }
 
     // Set headers for PDF download
     res.setHeader('Content-Type', 'application/pdf');

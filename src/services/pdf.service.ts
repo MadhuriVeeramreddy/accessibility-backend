@@ -1,8 +1,6 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 import * as ejs from 'ejs';
 import { join } from 'path';
-import { existsSync } from 'fs';
-import { homedir } from 'os';
 
 interface PDFData {
   website: {
@@ -30,29 +28,7 @@ interface PDFData {
   dashboardUrl: string;
 }
 
-// Get Chrome executable path (same as browser.service.ts)
-function getChromePath(): string | undefined {
-  const cacheDir = join(homedir(), '.cache', 'puppeteer', 'chrome');
-  
-  // Try to find installed Chrome versions
-  const possiblePaths = [
-    // Latest version
-    join(cacheDir, 'mac-143.0.7499.40/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    // ARM version
-    join(cacheDir, 'mac_arm-143.0.7499.40/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    // Fallback to older version
-    join(cacheDir, 'mac-121.0.6167.85/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-  ];
-
-  for (const path of possiblePaths) {
-    if (existsSync(path)) {
-      return path;
-    }
-  }
-
-  // Let Puppeteer auto-detect
-  return undefined;
-}
+import { getChromePath } from '../utils/chromePath';
 
 export async function generatePDF(data: PDFData): Promise<Buffer> {
   console.log('🔄 Starting PDF generation process...');
@@ -110,16 +86,22 @@ export async function generatePDF(data: PDFData): Promise<Buffer> {
   try {
     console.log('🌐 Launching headless Chrome browser...');
     const chromePath = getChromePath();
-    browser = await puppeteer.launch({
+    const launchOptions: any = {
       headless: true,
-      executablePath: chromePath,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
       ],
-    });
+    };
+    
+    // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+    if (chromePath) {
+      launchOptions.executablePath = chromePath;
+    }
+    
+    browser = await puppeteer.launch(launchOptions);
 
     console.log('📄 Configuring page for PDF generation...');
     const page: Page = await browser.newPage();
@@ -186,11 +168,17 @@ async function generateFallbackPDF(data: PDFData, html: string): Promise<Buffer>
   let browser: Browser | null = null;
   try {
     const chromePath = getChromePath();
-    browser = await puppeteer.launch({
+    const launchOptions: any = {
       headless: true,
-      executablePath: chromePath,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    };
+    
+    // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
+    if (chromePath) {
+      launchOptions.executablePath = chromePath;
+    }
+    
+    browser = await puppeteer.launch(launchOptions);
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
