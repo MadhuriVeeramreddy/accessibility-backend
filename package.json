@@ -6,9 +6,9 @@
     "dev": "ts-node-dev src/server.ts",
     "test:db": "ts-node src/db/testConnection.ts",
     "build": "tsc && prisma generate",
-    "build:render": "node scripts/migrate.js && tsc && prisma generate",
+    "build:render": "prisma migrate deploy && tsc && prisma generate",
     "migrate": "node scripts/migrate.js",
-    "start": "node dist/server.js",
+    "start": "node src/server.ts",
     "postinstall": "prisma generate && npx puppeteer browsers install chrome",
     "setup:chrome": "npx puppeteer browsers install chrome"
   },
