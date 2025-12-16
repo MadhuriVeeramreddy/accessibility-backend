@@ -3,6 +3,13 @@ import { getChromePath } from '../utils/chromePath';
 
 // Launch browser in headless mode
 export const launchBrowser = async (): Promise<Browser> => {
+  // Ensure PUPPETEER_CACHE_DIR is set for Render
+  const isRender = process.env.RENDER === 'true' || !!process.env.RENDER_SERVICE_NAME;
+  if (isRender && !process.env.PUPPETEER_CACHE_DIR) {
+    process.env.PUPPETEER_CACHE_DIR = '/opt/render/.cache/puppeteer';
+    console.log('🔧 Set PUPPETEER_CACHE_DIR for browser launch:', process.env.PUPPETEER_CACHE_DIR);
+  }
+  
   const chromePath = getChromePath();
   
   const launchOptions: any = {
@@ -18,11 +25,21 @@ export const launchBrowser = async (): Promise<Browser> => {
   // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
   if (chromePath) {
     launchOptions.executablePath = chromePath;
+    console.log(`🌐 Using Chrome at: ${chromePath}`);
+  } else {
+    console.log('🌐 Chrome path not found, Puppeteer will attempt auto-detection');
+    console.log(`   PUPPETEER_CACHE_DIR: ${process.env.PUPPETEER_CACHE_DIR || 'not set'}`);
   }
   
-  const browser = await puppeteer.launch(launchOptions);
-  
-  return browser;
+  try {
+    const browser = await puppeteer.launch(launchOptions);
+    return browser;
+  } catch (error) {
+    console.error('❌ Failed to launch browser:', error instanceof Error ? error.message : String(error));
+    console.error('   Chrome path:', chromePath || 'not set');
+    console.error('   PUPPETEER_CACHE_DIR:', process.env.PUPPETEER_CACHE_DIR || 'not set');
+    throw error;
+  }
 };
 
 // Open a page and navigate to URL

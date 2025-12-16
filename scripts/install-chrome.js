@@ -3,12 +3,10 @@
 /**
  * Install Chrome for Puppeteer with proper cache directory configuration
  * This script ensures Chrome is installed to the correct location on Render
- * 
- * It checks if Chrome already exists before installing to save time during builds.
  */
 
 const { execSync } = require('child_process');
-const { existsSync, mkdirSync, readdirSync, statSync } = require('fs');
+const { existsSync, mkdirSync } = require('fs');
 const { join } = require('path');
 const { homedir } = require('os');
 
@@ -17,64 +15,9 @@ const cacheDir = isRender
   ? '/opt/render/.cache/puppeteer'
   : join(homedir(), '.cache', 'puppeteer');
 
-const chromeCacheDir = join(cacheDir, 'chrome');
-
-console.log('🔧 Checking Chrome installation for Puppeteer...');
+console.log('🔧 Installing Chrome for Puppeteer...');
 console.log(`   Environment: ${isRender ? 'Render (Production)' : 'Local (Development)'}`);
 console.log(`   Cache directory: ${cacheDir}`);
-
-/**
- * Check if Chrome is already installed
- */
-function isChromeInstalled() {
-  if (!existsSync(chromeCacheDir)) {
-    return false;
-  }
-
-  try {
-    const versions = readdirSync(chromeCacheDir);
-    for (const version of versions) {
-      // Check for standard Chrome
-      const chromePath = join(chromeCacheDir, version, 'chrome-linux-x64', 'chrome');
-      if (existsSync(chromePath)) {
-        try {
-          const stats = statSync(chromePath);
-          if (stats.isFile()) {
-            console.log(`✅ Chrome already installed at: ${chromePath}`);
-            return true;
-          }
-        } catch (e) {
-          // Continue checking
-        }
-      }
-      
-      // Check for headless-shell
-      const headlessShellPath = join(chromeCacheDir, version, 'chrome-linux-x64', 'chrome-headless-shell');
-      if (existsSync(headlessShellPath)) {
-        try {
-          const stats = statSync(headlessShellPath);
-          if (stats.isFile()) {
-            console.log(`✅ Chrome headless-shell already installed at: ${headlessShellPath}`);
-            return true;
-          }
-        } catch (e) {
-          // Continue checking
-        }
-      }
-    }
-  } catch (error) {
-    // If we can't read the directory, assume Chrome is not installed
-    return false;
-  }
-
-  return false;
-}
-
-// Check if Chrome is already installed
-if (isChromeInstalled()) {
-  console.log('⏭️  Chrome is already installed, skipping installation.');
-  process.exit(0);
-}
 
 // Ensure cache directory exists
 try {
@@ -89,7 +32,9 @@ try {
 // Set environment variable and install Chrome
 try {
   process.env.PUPPETEER_CACHE_DIR = cacheDir;
-  console.log('📦 Installing Chrome (this may take a few minutes)...');
+  console.log('📦 Installing Chrome...');
+  console.log(`   Using cache directory: ${cacheDir}`);
+  
   execSync('npx puppeteer browsers install chrome', {
     stdio: 'inherit',
     env: {
@@ -97,7 +42,41 @@ try {
       PUPPETEER_CACHE_DIR: cacheDir,
     },
   });
-  console.log('✅ Chrome installed successfully!');
+  
+  // Verify Chrome was installed
+  const { readdirSync, existsSync, statSync } = require('fs');
+  const { join } = require('path');
+  const chromeCacheDir = join(cacheDir, 'chrome');
+  
+  if (existsSync(chromeCacheDir)) {
+    const versions = readdirSync(chromeCacheDir);
+    let chromeFound = false;
+    
+    for (const version of versions) {
+      const chromePath = join(chromeCacheDir, version, 'chrome-linux-x64', 'chrome');
+      if (existsSync(chromePath)) {
+        try {
+          const stats = statSync(chromePath);
+          if (stats.isFile()) {
+            console.log(`✅ Chrome verified at: ${chromePath}`);
+            chromeFound = true;
+            break;
+          }
+        } catch (e) {
+          // Continue checking
+        }
+      }
+    }
+    
+    if (!chromeFound) {
+      console.warn('⚠️  Chrome installation completed but Chrome executable not found in expected location');
+      console.warn(`   Checked: ${chromeCacheDir}`);
+    }
+  } else {
+    console.warn(`⚠️  Chrome cache directory not found: ${chromeCacheDir}`);
+  }
+  
+  console.log('✅ Chrome installation completed!');
 } catch (error) {
   console.error('❌ Failed to install Chrome:', error.message);
   console.log('🔄 Attempting fallback installation...');
@@ -109,10 +88,9 @@ try {
     console.log('✅ Chrome installed successfully (fallback)!');
   } catch (fallbackError) {
     console.error('❌ Fallback installation also failed:', fallbackError.message);
-    console.error('⚠️  Chrome installation failed, but continuing build...');
-    console.error('   The app will attempt to download Chrome at runtime if needed.');
-    // Don't exit with error - let the build continue
-    // Puppeteer might be able to download Chrome at runtime
+    console.error('⚠️  Chrome installation failed. The app may not work correctly.');
+    console.error('   Please check build logs and ensure PUPPETEER_CACHE_DIR is set correctly.');
+    // Don't exit with error - let build continue, but log the issue
     process.exit(0);
   }
 }

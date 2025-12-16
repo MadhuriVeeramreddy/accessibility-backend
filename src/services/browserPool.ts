@@ -27,6 +27,12 @@ class BrowserPool {
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
+    // Ensure PUPPETEER_CACHE_DIR is set for Render
+    const isRender = process.env.RENDER === 'true' || !!process.env.RENDER_SERVICE_NAME;
+    if (isRender && !process.env.PUPPETEER_CACHE_DIR) {
+      process.env.PUPPETEER_CACHE_DIR = '/opt/render/.cache/puppeteer';
+    }
+
     console.log('🚀 Initializing browser pool...');
     const chromePath = this.getChromePath();
 

@@ -84,6 +84,12 @@ export async function generatePDF(data: PDFData): Promise<Buffer> {
   // Generate PDF from HTML using Puppeteer
   let browser: Browser | null = null;
   try {
+    // Ensure PUPPETEER_CACHE_DIR is set for Render
+    const isRender = process.env.RENDER === 'true' || !!process.env.RENDER_SERVICE_NAME;
+    if (isRender && !process.env.PUPPETEER_CACHE_DIR) {
+      process.env.PUPPETEER_CACHE_DIR = '/opt/render/.cache/puppeteer';
+    }
+    
     console.log('🌐 Launching headless Chrome browser...');
     const chromePath = getChromePath();
     const launchOptions: any = {
@@ -99,6 +105,9 @@ export async function generatePDF(data: PDFData): Promise<Buffer> {
     // Only set executablePath if we found Chrome, otherwise let Puppeteer auto-detect
     if (chromePath) {
       launchOptions.executablePath = chromePath;
+      console.log(`   Using Chrome at: ${chromePath}`);
+    } else {
+      console.log(`   Chrome path not found, PUPPETEER_CACHE_DIR: ${process.env.PUPPETEER_CACHE_DIR || 'not set'}`);
     }
     
     browser = await puppeteer.launch(launchOptions);
@@ -167,6 +176,12 @@ export async function generatePDF(data: PDFData): Promise<Buffer> {
 async function generateFallbackPDF(data: PDFData, html: string): Promise<Buffer> {
   let browser: Browser | null = null;
   try {
+    // Ensure PUPPETEER_CACHE_DIR is set for Render
+    const isRender = process.env.RENDER === 'true' || !!process.env.RENDER_SERVICE_NAME;
+    if (isRender && !process.env.PUPPETEER_CACHE_DIR) {
+      process.env.PUPPETEER_CACHE_DIR = '/opt/render/.cache/puppeteer';
+    }
+    
     const chromePath = getChromePath();
     const launchOptions: any = {
       headless: true,
