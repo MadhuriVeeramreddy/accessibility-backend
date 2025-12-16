@@ -4,6 +4,13 @@ import app from './app';
 // Load environment variables
 dotenv.config();
 
+// Configure Puppeteer cache directory for Render
+const isRender = process.env.RENDER === 'true' || !!process.env.RENDER_SERVICE_NAME;
+if (isRender && !process.env.PUPPETEER_CACHE_DIR) {
+  process.env.PUPPETEER_CACHE_DIR = '/opt/render/.cache/puppeteer';
+  console.log('🔧 Configured Puppeteer cache directory for Render:', process.env.PUPPETEER_CACHE_DIR);
+}
+
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
