@@ -1,96 +1,116 @@
 #!/usr/bin/env node
 
-/**
- * Install Chrome for Puppeteer with proper cache directory configuration
- * This script ensures Chrome is installed to the correct location on Render
- */
-
 const { execSync } = require('child_process');
-const { existsSync, mkdirSync } = require('fs');
+const { existsSync, readdirSync } = require('fs');
 const { join } = require('path');
-const { homedir } = require('os');
-
-const isRender = process.env.RENDER === 'true' || !!process.env.RENDER_SERVICE_NAME;
-const cacheDir = isRender 
-  ? '/opt/render/.cache/puppeteer'
-  : join(homedir(), '.cache', 'puppeteer');
 
 console.log('🔧 Installing Chrome for Puppeteer...');
-console.log(`   Environment: ${isRender ? 'Render (Production)' : 'Local (Development)'}`);
+
+// Determine if we're on Render
+const isRender = process.env.RENDER === 'true' || !!process.env.RENDER_SERVICE_NAME;
+const cacheDir = isRender ? '/opt/render/.cache/puppeteer' : join(require('os').homedir(), '.cache', 'puppeteer');
+
+console.log(`   Environment: ${isRender ? 'Render (Production)' : 'Local Development'}`);
 console.log(`   Cache directory: ${cacheDir}`);
 
-// Ensure cache directory exists
-try {
-  if (!existsSync(cacheDir)) {
-    console.log(`📁 Creating cache directory: ${cacheDir}`);
-    mkdirSync(cacheDir, { recursive: true });
-  }
-} catch (error) {
-  console.warn(`⚠️  Could not create cache directory: ${error.message}`);
-}
+// Set cache directory environment variable
+process.env.PUPPETEER_CACHE_DIR = cacheDir;
 
-// Set environment variable and install Chrome
 try {
-  process.env.PUPPETEER_CACHE_DIR = cacheDir;
   console.log('📦 Installing Chrome...');
   console.log(`   Using cache directory: ${cacheDir}`);
   
+  // Install Chrome using Puppeteer browsers command
   execSync('npx puppeteer browsers install chrome', {
     stdio: 'inherit',
     env: {
       ...process.env,
-      PUPPETEER_CACHE_DIR: cacheDir,
-    },
+      PUPPETEER_CACHE_DIR: cacheDir
+    }
   });
   
-  // Verify Chrome was installed
-  const { readdirSync, existsSync, statSync } = require('fs');
-  const { join } = require('path');
-  const chromeCacheDir = join(cacheDir, 'chrome');
+  console.log('✅ Installation command completed!');
   
-  if (existsSync(chromeCacheDir)) {
-    const versions = readdirSync(chromeCacheDir);
-    let chromeFound = false;
+  // Verify installation
+  console.log('\n🔍 Verifying Chrome installation...');
+  
+  const chromeDir = join(cacheDir, 'chrome');
+  
+  if (existsSync(chromeDir)) {
+    console.log(`✅ Chrome directory exists: ${chromeDir}`);
     
-    for (const version of versions) {
-      const chromePath = join(chromeCacheDir, version, 'chrome-linux-x64', 'chrome');
-      if (existsSync(chromePath)) {
-        try {
-          const stats = statSync(chromePath);
-          if (stats.isFile()) {
-            console.log(`✅ Chrome verified at: ${chromePath}`);
-            chromeFound = true;
-            break;
+    try {
+      const versions = readdirSync(chromeDir);
+      console.log(`📁 Found versions: ${versions.join(', ')}`);
+      
+      // Check for the chrome executable in each version
+      for (const version of versions) {
+        const possiblePaths = [
+          join(chromeDir, version, 'chrome-linux64', 'chrome'),
+          join(chromeDir, version, 'chrome-linux-x64', 'chrome'),
+          join(chromeDir, version, 'chrome-mac-arm64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing'),
+          join(chromeDir, version, 'chrome-mac-x64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing'),
+        ];
+        
+        for (const chromePath of possiblePaths) {
+          if (existsSync(chromePath)) {
+            console.log(`✅ Chrome executable found: ${chromePath}`);
+            console.log('\n🎉 Chrome installation successful!');
+            process.exit(0);
           }
-        } catch (e) {
-          // Continue checking
+        }
+        
+        // List what's actually in the version directory
+        const versionPath = join(chromeDir, version);
+        if (existsSync(versionPath)) {
+          const contents = readdirSync(versionPath);
+          console.log(`   Contents of ${version}: ${contents.join(', ')}`);
+          
+          // Check inside each subdirectory
+          for (const subdir of contents) {
+            const subdirPath = join(versionPath, subdir);
+            try {
+              const subdirContents = readdirSync(subdirPath);
+              console.log(`      ${subdir}/: ${subdirContents.join(', ')}`);
+            } catch (e) {
+              // Not a directory or can't read
+            }
+          }
         }
       }
-    }
-    
-    if (!chromeFound) {
-      console.warn('⚠️  Chrome installation completed but Chrome executable not found in expected location');
-      console.warn(`   Checked: ${chromeCacheDir}`);
+      
+      console.log('\n⚠️  Chrome directory exists but executable not found in expected locations');
+      console.log('   This might still work - Puppeteer may find Chrome using its own logic');
+      process.exit(0);
+      
+    } catch (error) {
+      console.error('❌ Error reading chrome directory:', error.message);
+      process.exit(1);
     }
   } else {
-    console.warn(`⚠️  Chrome cache directory not found: ${chromeCacheDir}`);
+    console.error(`❌ Chrome directory not found: ${chromeDir}`);
+    console.log('   Installation may have failed or used a different location');
+    
+    // List what's in the cache directory
+    if (existsSync(cacheDir)) {
+      try {
+        const contents = readdirSync(cacheDir);
+        console.log(`   Cache directory contents: ${contents.join(', ')}`);
+      } catch (e) {
+        console.log('   Could not read cache directory contents');
+      }
+    } else {
+      console.log(`   Cache directory doesn't exist: ${cacheDir}`);
+    }
+    
+    process.exit(1);
   }
   
-  console.log('✅ Chrome installation completed!');
 } catch (error) {
-  console.error('❌ Failed to install Chrome:', error.message);
-  console.log('🔄 Attempting fallback installation...');
-  try {
-    // Fallback: try without explicit cache directory
-    execSync('npx puppeteer browsers install chrome', {
-      stdio: 'inherit',
-    });
-    console.log('✅ Chrome installed successfully (fallback)!');
-  } catch (fallbackError) {
-    console.error('❌ Fallback installation also failed:', fallbackError.message);
-    console.error('⚠️  Chrome installation failed. The app may not work correctly.');
-    console.error('   Please check build logs and ensure PUPPETEER_CACHE_DIR is set correctly.');
-    // Don't exit with error - let build continue, but log the issue
-    process.exit(0);
-  }
+  console.error('❌ Chrome installation failed:', error.message);
+  console.log('\n💡 Troubleshooting tips:');
+  console.log('   1. Check if you have sufficient disk space');
+  console.log('   2. Verify write permissions to:', cacheDir);
+  console.log('   3. Try running: PUPPETEER_CACHE_DIR=' + cacheDir + ' npx puppeteer browsers install chrome');
+  process.exit(1);
 }

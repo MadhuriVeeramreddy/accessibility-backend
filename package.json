@@ -5,13 +5,13 @@
   "scripts": {
     "dev": "ts-node-dev src/server.ts",
     "test:db": "ts-node src/db/testConnection.ts",
-    "build": "tsc && prisma generate",
     "build:render": "npm run build",
     "migrate": "node scripts/migrate.js",
     "start": "node dist/server.js",
-    "postinstall": "prisma generate && npm run setup:chrome",
-    "setup:chrome": "node scripts/install-chrome.js || (PUPPETEER_CACHE_DIR=/opt/render/.cache/puppeteer npx puppeteer browsers install chrome) || npx puppeteer browsers install chrome",
-    "setup:chrome:local": "npx puppeteer browsers install chrome"
+    "build": "tsc",
+    "postinstall": "node scripts/install-chrome.js",
+    "setup:chrome": "node scripts/install-chrome.js",
+    "setup:chrome:local": "PUPPETEER_CACHE_DIR=~/.cache/puppeteer npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@prisma/client": "^5.7.1",
